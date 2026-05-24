@@ -1,6 +1,6 @@
 {{-- Definimos las variables (propiedades) que este componente va a recibir. 
     Algunas tienen un valor por defecto (como null o false) para que no sea obligatorio pasarlas siempre. --}}
-@props(['marca', 'nombre', 'precio', 'imagen', 'precioViejo' => null, 'nuevo' => false, 'descuento' => null])
+@props(['id', 'marca', 'nombre', 'precio', 'imagen', 'precioViejo' => null, 'nuevo' => false, 'descuento' => null])
 
 {{-- col: columna dentro del sistema de grilla de Bootstrap --}}
 <div class="col">
@@ -46,7 +46,7 @@
                 <p class="card-text fw-bold fs-5 mb-3">${{ $precio }}</p>
             @endif
             
-            <a href="/en-proceso" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Agregar al carrito</a>
+            <a href="{{ route('producto.show', $id) }}" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Ver Detalles</a>
         </div>
     </div>
 </div>

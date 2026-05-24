@@ -13,7 +13,7 @@
     <!-- FontAwesome: librería de íconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- CSS propio del footer -->
-    <link rel="stylesheet" href="css/style-footer.css">
+    <link rel="stylesheet" href="{{ asset('css/style-footer.css') }}?v={{ time() }}">
 </head>
 
 <!-- footer: etiqueta semántica para el pie de página cat-footer: clase personalizada -->

@@ -184,10 +184,11 @@
                     @forelse($productos as $producto)
                         <!-- Componente que muestra cada producto, Se le pasan datos: marca, nombre, precio e imagen, number_format formatea el precio (ej: 15000 → 15.000) -->
                         <x-product-card
+                            :id="$producto->id" 
                             :marca="$producto->marca" 
                             :nombre="$producto->nombre" 
                             :precio="number_format($producto->precio, 0, ',', '.')" 
-                            :imagen="$producto->imagen" 
+                            :imagen="asset('imagenes/' . $producto->imagen_url)" 
                         />
 
                     <!-- Mensaje si no hay productos -->
