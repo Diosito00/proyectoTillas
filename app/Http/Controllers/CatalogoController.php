@@ -64,4 +64,5 @@ class CatalogoController extends Controller
 
         return view('producto', compact('producto'));
     }
+
 }

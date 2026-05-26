@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Producto;
 use App\Models\ProductoTalle;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Pedido;
+use App\Models\PedidoDetalle;
+
 
 class CarritoController extends Controller
 {
@@ -88,5 +93,74 @@ class CarritoController extends Controller
         }
 
         return back()->withErrors(['error' => 'No se pudo eliminar el producto.']);
+    }
+
+    public function procesarCompra()
+    {
+        $carrito = session()->get('carrito', []);
+
+        if (empty($carrito)) {
+            return back()->withErrors(['error' => 'Tu carrito está vacío.']);
+        }
+
+        // Calculamos el total nuevamente por seguridad
+        $total = 0;
+        foreach ($carrito as $item) {
+            $total += $item['precio'] * $item['cantidad'];
+        }
+
+        // Iniciamos la Transacción: Si algo falla acá adentro, Laravel deshace todo.
+        DB::beginTransaction();
+
+        try {
+            // 1. Creamos el ticket general (Pedido)
+            $pedido = Pedido::create([
+                'user_id' => Auth::id(),
+                'total' => $total,
+                'estado' => 'aprobado'
+            ]);
+
+            // 2. Procesamos cada zapatilla del carrito
+            foreach ($carrito as $id_unico => $item) {
+                // Separamos el ID del producto y el ID del talle (que venían como "1-40")
+                $partes = explode('-', $id_unico);
+                $producto_id = $partes[0];
+                $talle_id = $partes[1];
+
+                // 3. Verificamos el stock real en la base de datos
+                $talleDB = ProductoTalle::findOrFail($talle_id);
+                
+                if ($talleDB->stock < $item['cantidad']) {
+                    // Si justo alguien más compró el último par, cancelamos todo el proceso
+                    throw new \Exception('No hay stock suficiente para ' . $item['nombre'] . ' en talle ' . $item['talle']);
+                }
+
+                // 4. Guardamos el renglón del detalle
+                PedidoDetalle::create([
+                    'pedido_id' => $pedido->id,
+                    'producto_id' => $producto_id,
+                    'producto_talle_id' => $talle_id,
+                    'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $item['precio']
+                ]);
+
+                // 5. RESTAMOS EL STOCK de la base de datos
+                $talleDB->stock -= $item['cantidad'];
+                $talleDB->save();
+            }
+
+            // Si llegamos hasta acá sin errores, confirmamos la operación en MariaDB
+            DB::commit();
+
+            // Vaciamos la memoria del carrito
+            session()->forget('carrito');
+
+            return redirect()->route('catalogo')->with('success', '¡Compra realizada con éxito! Tu pedido está siendo preparado.');
+
+        } catch (\Exception $e) {
+            // Si hubo un error (ej. falta de stock), deshacemos todo
+            DB::rollBack();
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

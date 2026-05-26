@@ -89,4 +89,7 @@ Route::middleware('auth')->group(function () {
     
     // Ruta para eliminar un producto específico del carrito
     Route::post('/carrito/eliminar', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+
+    // Ruta para procesar la compra final
+    Route::post('/checkout', [CarritoController::class, 'procesarCompra'])->name('checkout');
 });
