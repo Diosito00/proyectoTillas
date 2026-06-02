@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Producto;
-use App\Models\ProductoTalle;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Pedido;
 use App\Models\PedidoDetalle;
+use App\Models\Producto;
+use App\Models\ProductoTalle;
 
 
 class CarritoController extends Controller

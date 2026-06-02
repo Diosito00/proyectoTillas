@@ -1,73 +1,133 @@
 <!DOCTYPE html>
-<!-- html: raíz del documento -->
-<!-- lang="es": indica que el contenido está en español -->
+{{-- html: raíz del documento --}}
+{{-- lang="es": indica que el contenido está en español (importante para SEO) --}}
 <html lang="es">
 <head>
-    <!-- charset UTF-8: permite usar tildes, ñ, símbolos -->
+    {{-- charset UTF-8: permite usar tildes, ñ, símbolos especiales --}}
     <meta charset="UTF-8">
-    <!-- viewport: hace que la web sea responsive -->
+    {{-- viewport: hace que la web sea responsive y se adapte a celulares --}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- X-UA-Compatible: mejora compatibilidad con navegadores antiguos -->
+    {{-- X-UA-Compatible: mejora compatibilidad con navegadores antiguos como Internet Explorer --}}
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- Bootstrap CSS: framework de estilos -->
+    
+    {{-- Bootstrap CSS: framework principal de estilos --}}
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
-    <!-- Bootstrap Icons: librería de íconos -->
+    {{-- Bootstrap Icons: librería para los íconos de usuario, carrito, menú, etc. --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- CSS propio del navbar -->
+    {{-- CSS propio: cargamos tus estilos personalizados. El ?v=time() evita que el navegador guarde el CSS viejo en caché --}}
     <link rel="stylesheet" href="{{ asset('css/style-navbar.css') }}?v={{ time() }}">
 </head>
 
-<!-- NAVBAR  nav: etiqueta semántica para navegación navbar: clase base de Bootstrap navbar-expand-lg: expandido en PC, colapsado en mobile custom-navbar: clase propia para estilos personalizados -->
+{{-- NAVBAR 
+    nav: etiqueta semántica para navegación principal
+    navbar-expand-lg: le dice a Bootstrap que muestre el menú completo en pantallas grandes (PC) y lo colapse en celulares
+    custom-navbar: tu clase propia para darle el color de fondo y detalles específicos 
+--}}
 <nav class="navbar navbar-expand-lg custom-navbar">
-    <!-- container-fluid: ocupa todo el ancho px-4: padding horizontal -->
+    {{-- container-fluid: hace que la barra ocupe el 100% del ancho de la pantalla --}}
     <div class="container-fluid px-4"> 
-        <!-- LOGO / MARCA navbar-brand: estilo especial para la marca d-flex: usa flexbox align-items-center: centra verticalmente gap-2: separación entre logo y texto -->
+        
+        {{-- LOGO / MARCA 
+            navbar-brand: clase especial de Bootstrap para destacar la marca
+            d-flex align-items-center gap-2: usa flexbox para alinear la imagen y el texto perfectamente en el centro vertical
+        --}}
         <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-            <!-- Imagen del logo asset(): genera ruta correcta width/height: tamaño d-inline-block: permite manejar dimensiones align-text-top: alinea con el texto -->
             <img src="{{ asset('imagenes/Logo-blanco.png') }}" alt="Ícono Tillas" width="35" height="35" class="d-inline-block align-text-top">
-            
-            <!-- Nombre de la marca fw-bold: negrita text-uppercase: mayúsculas fs-6: tamaño de texto tracking-wide: separación de letras (CSS propio) text-white: color blanco -->
             <span class="fw-bold text-uppercase fs-6 tracking-wide text-white">Tillas</span>
         </a>
 
-        <!-- BOTÓN HAMBURGUESA (solo en celular) navbar-toggler: botón de Bootstrap border-0: sin borde data-bs-toggle="collapse": activa colapso data-bs-target="#menuPrincipal": conecta con el menú -->
+        {{-- BOTÓN HAMBURGUESA (Solo visible en celulares)
+            data-bs-toggle y data-bs-target: son los conectores mágicos de Javascript que le dicen a Bootstrap qué div debe abrir/cerrar al hacer clic 
+        --}}
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Navegación">
-            <!-- Ícono hamburguesa bi bi-list: ícono  fs-2: tamaño grande text-white: color blanco -->
             <i class="bi bi-list text-white fs-2"></i>
         </button>
 
-        {{-- CONTENEDOR COLAPSABLE
-            collapse navbar-collapse: Todo lo que esté dentro de este <div> se ocultará en celulares y solo se mostrará cuando se presione el botón hamburguesa. En PC siempre será visible. --}}
+        {{-- CONTENEDOR COLAPSABLE (El menú de links) --}}
         <div class="collapse navbar-collapse" id="menuPrincipal">
-            <!-- LISTA DE LINKS  navbar-nav: estilo de navegación me-auto: empuja el contenido hacia la derecha mb-2 mb-lg-0: margen en mobile, sin margen en PC center-links: clase personalizada -->
+            {{-- navbar-nav me-auto: "me-auto" empuja automáticamente todo lo que esté a la derecha hacia el borde derecho, separando los links de los botones de usuario --}}
             <ul class="navbar-nav me-auto mb-2 mb-lg-0 center-links">
-                
-                {{-- <li>: List Item. Cada elemento de la lista. nav-item: Margen para elementos de la navbar. --}}
-                <li class="nav-item">
-                    {{-- nav-link: Le da estilo de enlace de navegación (color, efecto al pasar el mouse, área de clic ampliada). --}}
-                    <a class="nav-link fs-8" href="/">Inicio</a>
-                </li>
-                <li class="nav-item"><a class="nav-link fs-8" href="/catalogo">Catálogo</a></li>
+                <li class="nav-item"><a class="nav-link fs-8" href="/">Inicio</a></li>
+                {{-- route('catalogo'): usamos el nombre de la ruta en lugar de la URL quemada para que sea dinámico --}}
+                <li class="nav-item"><a class="nav-link fs-8" href="{{ route('catalogo') }}">Catálogo</a></li>
                 <li class="nav-item"><a class="nav-link fs-8" href="/comercializacion">Comercialización</a></li>
                 <li class="nav-item"><a class="nav-link fs-8" href="/quienes">Quienes somos</a></li>
                 <li class="nav-item"><a class="nav-link fs-8" href="/contacto">Contacto</a></li>
-                <li class="nav-item"><a class="nav-link fs-8" href="/terminos">Terminos de uso</a></li>
+                <li class="nav-item"><a class="nav-link fs-8" href="/terminos">Términos de uso</a></li>
             </ul>
         </div>
-    </div>
 
-    <!-- CONTENEDOR FLEX d-flex: activa Flexbox para organizar los elementos en línea -->
-    <div class="d-flex">
-    <!-- BOTÓN DE LOGIN, <a>: se usa como botón que redirige a la página de login (/login), btn-outline-light: botón con borde blanco y fondo transparente, border-0: elimina el borde por defecto
-    d-flex: convierte el botón en flexbox, align-items-center: centra verticalmente el contenido (ícono + texto), gap-2: agrega espacio entre el ícono y el texto, px-3 py-2: padding horizontal y vertical, rounded-pill: bordes totalmente redondeados (estilo tipo cápsula)-->
-    <a href="/login" class="btn btn-outline-light fw-bold border-0 d-flex align-items-center gap-2 px-3 py-2 rounded-pill">
-        
-        <!-- ÍCONO DE USUARIO bi bi-person: ícono de Bootstrap Icons representa usuario/login -->
-        <i class="bi bi-person"></i> 
-        <!-- TEXTO DEL BOTÓN span: contenedor en línea para el texto permite separar visualmente del ícono -->
-        <span>Ingresar</span>
-    </a>
-    </div>
+        {{-- SECCIÓN DERECHA: Botones de Usuario y Carrito 
+            pe-lg-2: padding a la derecha solo en PC para que no quede pegado al borde 
+        --}}
+        <div class="d-flex align-items-center gap-3 pe-lg-2">
+            
+            {{-- DIRECTIVA @guest: Laravel renderiza esto ÚNICAMENTE si el usuario NO ha iniciado sesión (visitante) --}}
+            @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-light fw-bold border-0 d-flex align-items-center gap-2 px-3 py-2 rounded-pill">
+                    <i class="bi bi-person"></i> 
+                    <span>Ingresar</span>
+                </a>
+            @endguest
 
+            {{-- DIRECTIVA @auth: Laravel renderiza esto ÚNICAMENTE si el usuario SÍ tiene una sesión activa --}}
+            @auth
+                {{-- BOTÓN DEL CARRITO --}}
+                {{-- position-relative: es obligatorio para que el "badge" rojo se posicione en la esquina del ícono --}}
+                <a href="{{ route('carrito.index') }}" class="text-white text-decoration-none position-relative d-flex align-items-center mt-1 me-2" title="Mi Carrito">
+                    <i class="bi bi-cart3 fs-5"></i>
+                    
+                    {{-- Lógica del carrito: contamos cuántos elementos hay en el arreglo de la sesión --}}
+                    @php $cantidadCarrito = count(session('carrito', [])); @endphp
+                    
+                    {{-- Si hay al menos 1 producto, dibujamos el circulito rojo (badge) --}}
+                    @if($cantidadCarrito > 0)
+                        {{-- position-absolute top-0 start-100 translate-middle: clases de Bootstrap para anclar el circulito arriba a la derecha --}}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm" style="font-size: 0.65rem;">
+                            {{ $cantidadCarrito }}
+                        </span>
+                    @endif
+                </a>
+
+                {{-- MENÚ DESPLEGABLE DEL USUARIO (Dropdown) --}}
+                <div class="dropdown">
+                    {{-- dropdown-toggle: indica que este botón abre un menú --}}
+                    <button class="btn btn-outline-light border-0 fw-bold d-flex align-items-center gap-2 px-3 py-2 rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-check-fill"></i>
+                        {{-- Auth::user()->name: Imprime el nombre real que está guardado en la base de datos MariaDB --}}
+                        <span>{{ Auth::user()->name }}</span>
+                    </button>
+                    
+                    {{-- La cajita blanca que se despliega al hacer clic --}}
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+                        
+                        {{-- Validación de Rol: Si el usuario actual es "admin", le mostramos esta opción secreta --}}
+                        @if(Auth::user()->rol === 'admin')
+                            <li>
+                                <a class="dropdown-item fw-bold text-primary" href="{{ route('admin.index') }}">
+                                    <i class="bi bi-shield-lock-fill me-2"></i>Panel Admin
+                                </a>
+                            </li>
+                            {{-- Línea divisoria --}}
+                            <li><hr class="dropdown-divider"></li>
+                        @endif
+                        
+                        {{-- BOTÓN CERRAR SESIÓN 
+                            Debe ser un formulario POST por seguridad, para que un link malicioso no pueda cerrar la sesión del usuario a la fuerza 
+                        --}}
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
+                                @csrf {{-- Token de seguridad obligatorio --}}
+                                <button type="submit" class="dropdown-item text-danger fw-bold">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @endauth
+            
+        </div>
+    </div>
 </nav>
 </html>

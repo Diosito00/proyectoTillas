@@ -8,6 +8,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\AdminController;
 
 // Ruta principal del sitio ("/")
 // Cuando alguien entra a la raíz, devuelve la vista 'inicio'
@@ -93,3 +95,17 @@ Route::middleware('auth')->group(function () {
     // Ruta para procesar la compra final
     Route::post('/checkout', [CarritoController::class, 'procesarCompra'])->name('checkout');
 });
+
+// --- ZONA DE ADMINISTRACIÓN (VIP) ---
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
+    
+    // Ahora apunta al controlador y carga la vista real
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    
+});
+
+// Ruta para mostrar el formulario vacío
+Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
+    
+// Ruta oculta (POST) para recibir los datos del formulario y la foto
+Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');

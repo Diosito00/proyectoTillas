@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('marca'); 
             $table->string('categoria'); // ej: hombre, mujer, nino
             $table->string('deporte_uso')->nullable(); // ej: running, urbano
-            decimal('precio', 10, 2) = Hasta 10 dígitos, 2 de ellos para los centavos
-            $table->decimal('precio', 10, 2); 
+            $table->decimal('precio', 10, 2); // Hasta 10 dígitos, 2 de ellos para los centavos
             $table->string('imagen_url')->nullable(); // La ruta de la foto
             
             $table->timestamps(); // Crea mágicamente las columnas 'created_at' y 'updated_at'
