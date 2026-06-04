@@ -94,6 +94,16 @@ Route::middleware('auth')->group(function () {
 
     // Ruta para procesar la compra final
     Route::post('/checkout', [CarritoController::class, 'procesarCompra'])->name('checkout');
+
+    ////////////////////////////
+    // Nueva ruta para VER la pantalla de pago
+    Route::get('/checkout', [CarritoController::class, 'mostrarCheckout'])->name('checkout.index');
+    
+    // Ruta que procesa el formulario final de compra
+    Route::post('/checkout/procesar', [CarritoController::class, 'procesarCompra'])->name('checkout.procesar');
+
+    // 🚀 AGREGÁ ESTA RUTA ACÁ:
+    Route::get('/mis-compras', [CarritoController::class, 'historial'])->name('compras.historial');
 });
 
 // --- ZONA DE ADMINISTRACIÓN (VIP) ---
@@ -109,3 +119,9 @@ Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.
     
 // Ruta oculta (POST) para recibir los datos del formulario y la foto
 Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
+
+/////////////////////
+// Rutas de Registro (Públicas)
+Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('registro');
+Route::post('/registro', [AuthController::class, 'register'])->name('registro.post');
+

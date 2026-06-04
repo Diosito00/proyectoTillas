@@ -9,6 +9,7 @@ use App\Models\Pedido;
 use App\Models\PedidoDetalle;
 use App\Models\Producto;
 use App\Models\ProductoTalle;
+use App\Models\Venta;
 
 
 class CarritoController extends Controller
@@ -95,7 +96,7 @@ class CarritoController extends Controller
         return back()->withErrors(['error' => 'No se pudo eliminar el producto.']);
     }
 
-    public function procesarCompra()
+  /*  public function procesarCompra()
     {
         $carrito = session()->get('carrito', []);
 
@@ -162,5 +163,109 @@ class CarritoController extends Controller
             DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()]);
         }
+    }*/
+
+
+
+    /////////////
+    // 1. NUEVO MÉTODO: Muestra la pantalla de confirmación de compra
+public function mostrarCheckout()
+{
+    $carrito = session()->get('carrito', []);
+
+    // Si intentan entrar directo a /checkout con el carrito vacío, los mandamos al catálogo
+    if (empty($carrito)) {
+        return redirect()->route('catalogo')->withErrors(['error' => 'Tu carrito está vacío.']);
     }
+
+    // Calculamos el total para mostrarlo en la pantalla de pago
+    $total = 0;
+    foreach($carrito as $item) {
+        $total += $item['precio'] * $item['cantidad'];
+    }
+
+
+
+// Por esto otro:
+return view('checkout', compact('carrito', 'total'));
 }
+
+// 2. MODIFICADO: Procesa el formulario final enviado desde el Checkout
+public function procesarCompra(Request $request)
+{
+    $carrito = session()->get('carrito', []);
+    
+    if (empty($carrito)) {
+        return redirect()->route('catalogo');
+    }
+
+    // VALIDACIÓN: Aquí podés validar datos que pidas en el checkout (ej: dirección o teléfono)
+    $request->validate([
+        'direccion' => 'required|string|max:255',
+        'telefono' => 'required|string|max:20',
+    ]);
+
+    $total = 0;
+    foreach($carrito as $item) {
+        $total += $item['precio'] * $item['cantidad'];
+    }
+    
+    // Guardamos la cabecera de la venta en tu base de datos
+    $venta = Venta::create([
+        'user_id' => Auth::id(),
+        'total' => $total,
+        'direccion' => $request->direccion, // Asegurate de tener esta columna o sacala si no la usás
+        'fecha' => now(),
+    ]);
+
+    /*// Guardamos el detalle de cada zapatilla
+    foreach($carrito as $item) {
+        $venta->detalles()->create([
+            'producto_id' => $item['producto_id'],
+            'talle_id' => $item['talle'],
+            'cantidad' => $item['cantidad'],
+            'precio_unitario' => $item['precio'],
+        ]);
+    }*/
+
+        // Reemplazá tu bucle foreach por este bloque seguro:
+foreach ($carrito as $key => $item) {
+    
+    // Como tu clave única es "IDPRODUCTO-IDTALLE" (ej: "1-1"), 
+    // podemos romper el texto por el guion para rescatar el talle real si el array falla
+    $partes = explode('-', $key);
+    $talleAlternativo = isset($partes[1]) ? $partes[1] : 40; // Si no lo encuentra, usa 40 por defecto
+
+    // Usamos el método nativo de base de datos directamente para evitar bloqueos del modelo
+    \DB::table('detalle_ventas')->insert([
+        'venta_id'        => $venta->id,
+        'producto_id'     => $item['producto_id'] ?? $item['id'] ?? 1,
+        'talle'           => $item['talle'] ?? $talleAlternativo, // Intenta leer 'talle', sino usa el recuperado
+        'cantidad'        => $item['cantidad'] ?? 1,
+        'precio_unitario' => $item['precio'] ?? 0,
+        'created_at'      => now(),
+        'updated_at'      => now(),
+    ]);
+}
+
+
+    // MANDATORIO POR CONSIGNA: Vaciamos el carrito de la sesión
+    session()->forget('carrito');
+
+    return redirect()->route('compras.historial')->with('success', '¡Compra realizada con éxito! Podés verla en tu historial.');
+
+}
+
+    public function historial()
+{
+    // Buscamos las ventas del usuario logueado con sus detalles y los productos vinculados
+    $compras = Venta::where('user_id', auth()->id())
+                    ->with('detalles.producto')
+                    ->orderBy('fecha', 'desc')
+                    ->get();
+
+    return view('historial', compact('compras'));
+}
+}
+
+    

@@ -111,6 +111,17 @@
                             {{-- Línea divisoria --}}
                             <li><hr class="dropdown-divider"></li>
                         @endif
+
+                        {{---------------------------------------/////////--}}
+                
+                        <li>
+                            <a class="dropdown-item fw-bold text-dark" href="{{ route('compras.historial') }}">
+                                <i class="bi bi-bag-check-fill me-2 text-secondary"></i>Mis Compras
+                            </a>
+                        </li>
+
+                        {{-- Otra línea divisoria fina para que no se pegue con el botón rojo --}}
+                        <li><hr class="dropdown-divider"></li>
                         
                         {{-- BOTÓN CERRAR SESIÓN 
                             Debe ser un formulario POST por seguridad, para que un link malicioso no pueda cerrar la sesión del usuario a la fuerza 

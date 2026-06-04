@@ -22,13 +22,13 @@
 </head>
 
 {{-- body-login: clase personalizada para fondo.
-     d-flex align-items-center justify-content-center: centra la tarjeta perfectamente en la pantalla. --}}
+    d-flex align-items-center justify-content-center: centra la tarjeta perfectamente en la pantalla. --}}
 <body class="body-login d-flex align-items-center justify-content-center bg-dark">
 
-         {{-- shadow-lg: sombra más grande y difuminada
-         p-4 p-md-5: relleno adaptable (normal en móviles, amplio en PC)
-         rounded-4: bordes más redondeados y modernos
-         bg-white: fondo blanco asegurado --}}
+    {{-- shadow-lg: sombra más grande y difuminada
+    p-4 p-md-5: relleno adaptable (normal en móviles, amplio en PC)
+    rounded-4: bordes más redondeados y modernos
+    bg-white: fondo blanco asegurado --}}
     <div class="login-card shadow-lg p-4 p-md-5 rounded-4 bg-white position-relative" style="width: 100%; max-width: 450px;">
         {{-- position-absolute: Lo saca del flujo normal --}}
         {{-- top-0 start-0: Lo pega arriba a la izquierda --}}
@@ -44,29 +44,18 @@
             <p class="text-muted small">Ingresá tus datos para continuar a tu cuenta.</p>
         </div>
 
+        {{-- action="{{ route('login.post') }}": Es la forma correcta en Laravel de enviar datos (usarás esta u otra ruta que definas) --}}
         <form action="{{ route('login.post') }}" method="POST">
             @csrf {{-- Protección obligatoria de Laravel para formularios --}}
 
-            {{-- Bloque de Errores: Si el AuthController devuelve un error, se muestra aquí --}}
-            @if ($errors->any())
-                <div class="alert alert-danger small py-2 rounded-3 mb-3">
-                    <ul class="mb-0 ps-3">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             <div class="form-floating mb-3">
-                {{-- old('email'): Si se equivoca en la clave, Laravel le devuelve el email que ya había escrito para que no tenga que tipear todo de nuevo --}}
-                {{-- @error('email') is-invalid @enderror: Pinta el borde de rojo si hay error --}}
-                <input type="email" name="email" class="form-control bg-light border-0 rounded-3 @error('email') is-invalid @enderror" id="emailInput" placeholder="Email" value="{{ old('email') }}" required>
+                {{-- rounded-3: bordes ligeramente redondeados en el input --}}
+                <input type="email" name="email" class="form-control bg-light border-0 rounded-3" id="emailInput" placeholder="Email" required>
                 <label for="emailInput" class="text-muted"><i class="bi bi-envelope me-2"></i>Correo electrónico</label>
             </div>
 
             <div class="form-floating mb-3">
-                <input type="password" name="password" class="form-control bg-light border-0 rounded-3 @error('password') is-invalid @enderror" id="passwordInput" placeholder="Contraseña" required>
+                <input type="password" name="password" class="form-control bg-light border-0 rounded-3" id="passwordInput" placeholder="Contraseña" required>
                 <label for="passwordInput" class="text-muted"><i class="bi bi-lock me-2"></i>Contraseña</label>
             </div>
 
@@ -80,14 +69,18 @@
                 <a href="/en-proceso" class="text-dark text-decoration-none fw-bold hover-underline">¿Olvidaste tu contraseña?</a>
             </div>
 
+            {{-- btn-lg: botón más grande
+                py-3: más alto (padding Y)
+                text-uppercase tracking-wide: letras mayúsculas y separadas para más elegancia --}}
             <button type="submit" class="btn btn-dark btn-lg w-100 rounded-3 text-uppercase fw-bold tracking-wide py-3 mb-4">
                 Ingresar <i class="bi bi-arrow-right ms-2"></i>
             </button>
             
+            {{-- border-top pt-4: Línea divisoria gris y padding superior --}}
             <div class="text-center border-top pt-4">
                 <p class="text-muted small mb-0">
                     ¿Todavía no tenés una cuenta? 
-                    <a href="/en-proceso" class="text-dark fw-bold text-decoration-none ms-1 hover-underline">Registrate acá</a>
+                    <a href="{{ route('registro') }}" class="text-dark fw-bold text-decoration-none ms-1 hover-underline">Registrate acá</a>
                 </p>
             </div>
         </form>

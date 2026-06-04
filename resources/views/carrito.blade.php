@@ -90,9 +90,12 @@
 
                         <form action="{{ route('checkout') }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase tracking-wide">
+                            <!-- <button type="submit" class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase tracking-wide">
                                 Finalizar Compra <i class="bi bi-lock-fill ms-2"></i>
-                            </button>
+                            </button> -->
+                            <a href="{{ route('checkout') }}" class="btn btn-dark btn-lg w-100 py-3 fw-bold text-uppercase">
+                                Proceder al Pago <i class="bi bi-arrow-right ms-2"></i>
+                            </a>
                         </form>
                     </div>
                 </div>
