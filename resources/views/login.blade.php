@@ -48,7 +48,22 @@
         <form action="{{ route('login.post') }}" method="POST">
             @csrf {{-- Protección obligatoria de Laravel para formularios --}}
 
+                {{-- Bloque de Errores: Si el AuthController devuelve un error, se muestra aquí --}}
+            @if ($errors->any())
+                <div class="alert alert-danger small py-2 rounded-3 mb-3">
+                    <ul class="mb-0 ps-3">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="form-floating mb-3">
+                {{-- old('email'): Si se equivoca en la clave, Laravel le devuelve el email que ya había escrito para que no tenga que tipear todo de nuevo --}}
+                {{-- @error('email') is-invalid @enderror: Pinta el borde de rojo si hay error --}}
+                <input type="email" name="email" class="form-control bg-light border-0 rounded-3 @error('email') is-invalid @enderror" id="emailInput" placeholder="Email" value="{{ old('email') }}" required>
+                
                 {{-- rounded-3: bordes ligeramente redondeados en el input --}}
                 <input type="email" name="email" class="form-control bg-light border-0 rounded-3" id="emailInput" placeholder="Email" required>
                 <label for="emailInput" class="text-muted"><i class="bi bi-envelope me-2"></i>Correo electrónico</label>

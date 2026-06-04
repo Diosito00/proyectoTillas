@@ -7,23 +7,28 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migración para crear la tabla de cabecera en MariaDB.
      */
     public function up(): void
 {
     Schema::create('ventas', function (Blueprint $table) {
+        // Clave primaria autoincremental única para identificar la orden de compra
         $table->id();
-        // Relaciona la venta con el id del usuario cliente que está logueado
+        // FK que vincula la venta con el ID del usuario en la tabla 'users'. Si el usuario se elimina, borra sus ventas
         $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+        // Monto acumulado final de la compra (suma de todos los subtotales de las zapatillas)
         $table->decimal('total', 10, 2);
+        // Almacena la dirección física ingresada en el checkout para el despacho del pedido
         $table->string('direccion');
+        // Registra el momento exacto del pago (utilizando la zona horaria de Buenos Aires configurada)
         $table->timestamp('fecha');
+        // Columnas de auditoría interna de Laravel: created_at y updated_at
         $table->timestamps();
     });
 }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migración eliminando la tabla de la base de datos.
      */
     public function down(): void
     {

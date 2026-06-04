@@ -7,25 +7,32 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ejecuta la migración para crear la tabla en MariaDB.
      */
     public function up(): void
 {
     Schema::create('detalle_ventas', function (Blueprint $table) {
+        // Clave primaria autoincremental de la fila de detalle
         $table->id();
         // Relación con la cabecera de la venta
+
+        // FK vinculada a la cabecera 'ventas'. Si se borra la venta, elimina sus detalles en cascada
         $table->foreignId('venta_id')->constrained('ventas')->onDelete('cascade');
-        // Relación con tu producto (zapatilla)
+        // FK vinculada a la tabla de productos (zapatillas) para saber qué se compró
         $table->foreignId('producto_id')->constrained('productos'); 
-        $table->integer('talle'); // Guardamos el número de talle (ej: 41)
+        // Almacena el número físico de talle seleccionado por el cliente (ej: 42)
+        $table->integer('talle'); 
+        // Cantidad de unidades adquiridas de este producto en particular
         $table->integer('cantidad');
+        // Precio histórico del producto al momento exacto de la compra (evita desfases por inflación)
         $table->decimal('precio_unitario', 10, 2);
+        // Columnas automáticas de control de auditoría: created_at y updated_at
         $table->timestamps();
     });
 }
 
     /**
-     * Reverse the migrations.
+     * Revierte la migración eliminando la tabla completa.
      */
     public function down(): void
     {

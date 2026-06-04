@@ -93,6 +93,11 @@
                             <!-- <button type="submit" class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase tracking-wide">
                                 Finalizar Compra <i class="bi bi-lock-fill ms-2"></i>
                             </button> -->
+
+                            
+                            {{-- ENLACE AL CHECKOUT:
+                                Redirige al cliente desde la vista de control del carrito hacia el formulario de pago.
+                                Usa las clases nativas 'btn-lg' y 'w-100' de Bootstrap para ocupar todo el ancho de forma responsiva. --}}
                             <a href="{{ route('checkout') }}" class="btn btn-dark btn-lg w-100 py-3 fw-bold text-uppercase">
                                 Proceder al Pago <i class="bi bi-arrow-right ms-2"></i>
                             </a>

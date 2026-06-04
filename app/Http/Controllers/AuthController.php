@@ -51,28 +51,33 @@ class AuthController extends Controller
 ////////////////////////////////////////
 
 
-    // 1. Muestra la vista del formulario de registro
+    /**
+     * Muestra la vista del formulario de registro.
+     * Retorna el archivo Blade donde el visitante ingresa sus datos para crear una cuenta.
+     */
 public function showRegisterForm()
 {
     return view('registro');
 }
-
-// 2. Procesa y valida los datos del nuevo cliente
+/**
+     * Procesa, valida y da de alta los datos del nuevo cliente en la base de datos.
+     * Si pasa los filtros, lo loguea de forma automática y lo redirige al catálogo.
+     */
 public function register(Request $request)
 {
-    // VALIDACIÓN EXIGIDA POR LA CONSIGNA
+   // VALIDACIÓN DE REGLAS: Filtra los datos del formulario antes de tocar MariaDB
     $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users', // 'unique' evita correos duplicados
         'password' => 'required|string|min:6|confirmed', // 'confirmed' exige que coincida con password_confirmation
     ], [
-        // Mensajes personalizados en español si querés lucirte
+       // Mensajes personalizados en español para mejorar la experiencia de usuario
         'email.unique' => 'Este correo electrónico ya está registrado.',
         'password.confirmed' => 'Las contraseñas no coinciden.',
         'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
     ]);
 
-    // CREACIÓN DEL USUARIO EN MARIADB
+    /// PERSISTENCIA: Crea el nuevo registro en la tabla 'users' utilizando asignación masiva
     $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
@@ -80,7 +85,7 @@ public function register(Request $request)
         'rol' => 'cliente', // Por defecto, todos se registran con el rol básico
     ]);
 
-    // Logueamos automáticamente al cliente recién creado
+    // AUTENTICACIÓN: Inicia la sesión en el navegador de manera automática para el cliente creado
     Auth::login($user);
 
     // Redirigimos al catálogo con un mensaje de bienvenida

@@ -168,7 +168,10 @@ class CarritoController extends Controller
 
 
     /////////////
-    // 1. NUEVO MÉTODO: Muestra la pantalla de confirmación de compra
+    /**
+     * Muestra la pantalla de confirmación de compra (Checkout).
+     * Recupera el contenido provisional del carrito desde la sesión y calcula el total.
+     */
 public function mostrarCheckout()
 {
     $carrito = session()->get('carrito', []);
@@ -178,19 +181,19 @@ public function mostrarCheckout()
         return redirect()->route('catalogo')->withErrors(['error' => 'Tu carrito está vacío.']);
     }
 
-    // Calculamos el total para mostrarlo en la pantalla de pago
+  // Acumulador dinámico para calcular el costo total de los productos en la orden
     $total = 0;
     foreach($carrito as $item) {
         $total += $item['precio'] * $item['cantidad'];
     }
 
-
-
-// Por esto otro:
 return view('checkout', compact('carrito', 'total'));
 }
 
-// 2. MODIFICADO: Procesa el formulario final enviado desde el Checkout
+/**
+     * Procesa el formulario final enviado desde el Checkout.
+     * Valida los datos logísticos, inserta la cabecera, desgloza los detalles en MariaDB y vacía la sesión.
+     */
 public function procesarCompra(Request $request)
 {
     $carrito = session()->get('carrito', []);
@@ -205,17 +208,18 @@ public function procesarCompra(Request $request)
         'telefono' => 'required|string|max:20',
     ]);
 
+    // Recalcula el total del carrito para la persistencia de datos seguros en el backend
     $total = 0;
     foreach($carrito as $item) {
         $total += $item['precio'] * $item['cantidad'];
     }
     
-    // Guardamos la cabecera de la venta en tu base de datos
+    /// 1. CABECERA: Registra la venta general vinculada al ID del cliente logueado
     $venta = Venta::create([
         'user_id' => Auth::id(),
         'total' => $total,
-        'direccion' => $request->direccion, // Asegurate de tener esta columna o sacala si no la usás
-        'fecha' => now(),
+        'direccion' => $request->direccion, 
+        'fecha' => now(), // Toma la hora local configurada previamente en config/app.php
     ]);
 
     /*// Guardamos el detalle de cada zapatilla
@@ -228,15 +232,14 @@ public function procesarCompra(Request $request)
         ]);
     }*/
 
-        // Reemplazá tu bucle foreach por este bloque seguro:
+// 2. DETALLES: Bucle iterativo seguro para inyectar cada zapatilla comprada
 foreach ($carrito as $key => $item) {
     
-    // Como tu clave única es "IDPRODUCTO-IDTALLE" (ej: "1-1"), 
-    // podemos romper el texto por el guion para rescatar el talle real si el array falla
+    // Proceso alternativo: Extrae el talle real decodificando la clave compuesta (ID-TALLE) del carrito
     $partes = explode('-', $key);
     $talleAlternativo = isset($partes[1]) ? $partes[1] : 40; // Si no lo encuentra, usa 40 por defecto
 
-    // Usamos el método nativo de base de datos directamente para evitar bloqueos del modelo
+    // Inserción directa via Query Builder (\DB) para asegurar rendimiento y consistencia directa en MariaDB
     \DB::table('detalle_ventas')->insert([
         'venta_id'        => $venta->id,
         'producto_id'     => $item['producto_id'] ?? $item['id'] ?? 1,
@@ -249,19 +252,23 @@ foreach ($carrito as $key => $item) {
 }
 
 
-    // MANDATORIO POR CONSIGNA: Vaciamos el carrito de la sesión
+    // Libera los productos de la sesión de memoria para inicializar el carrito en cero
     session()->forget('carrito');
-
+    // Redirección con mensaje flash de éxito hacia la pantalla visual del usuario
     return redirect()->route('compras.historial')->with('success', '¡Compra realizada con éxito! Podés verla en tu historial.');
 
 }
 
+/**
+     * Muestra el historial cronológico de compras del cliente.
+     * Carga de forma eficiente (Eager Loading) las relaciones de base de datos.
+     */
     public function historial()
 {
-    // Buscamos las ventas del usuario logueado con sus detalles y los productos vinculados
+    // Consulta optimizada a MariaDB filtrando únicamente por las compras del ID autenticado
     $compras = Venta::where('user_id', auth()->id())
-                    ->with('detalles.producto')
-                    ->orderBy('fecha', 'desc')
+                    ->with('detalles.producto') // Eager Loading: previene el problema de consultas N+1 en el bucle Blade
+                    ->orderBy('fecha', 'desc') // Ordenamiento cronológico: las compras más recientes aparecen primero
                     ->get();
 
     return view('historial', compact('compras'));

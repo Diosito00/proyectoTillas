@@ -113,14 +113,17 @@
                         @endif
 
                         {{---------------------------------------/////////--}}
-                
+                        {{-- ENLACE A HISTORIAL DE COMPRAS:
+                        @auth garantiza que este botón solo exista si el cliente está logueado. 
+                        Apunta al método 'historial' del controlador para listar sus pedidos. --}}
                         <li>
                             <a class="dropdown-item fw-bold text-dark" href="{{ route('compras.historial') }}">
                                 <i class="bi bi-bag-check-fill me-2 text-secondary"></i>Mis Compras
                             </a>
                         </li>
 
-                        {{-- Otra línea divisoria fina para que no se pegue con el botón rojo --}}
+                        {{-- SEPARADOR VISUAL:
+                        Línea divisoria fina de Bootstrap para desapegar estéticamente las compras del botón de cierre de sesión --}}
                         <li><hr class="dropdown-divider"></li>
                         
                         {{-- BOTÓN CERRAR SESIÓN 

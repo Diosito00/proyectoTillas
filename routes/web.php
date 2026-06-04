@@ -96,13 +96,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout', [CarritoController::class, 'procesarCompra'])->name('checkout');
 
     ////////////////////////////
-    // Nueva ruta para VER la pantalla de pago
+    // Muestra la pantalla de pago (GET). Calcula el total de productos y carga el formulario.
     Route::get('/checkout', [CarritoController::class, 'mostrarCheckout'])->name('checkout.index');
     
-    // Ruta que procesa el formulario final de compra
+    // Procesa la compra (POST). Guarda la cabecera en 'ventas' y cada producto en 'detalle_ventas'.
     Route::post('/checkout/procesar', [CarritoController::class, 'procesarCompra'])->name('checkout.procesar');
 
-    // 🚀 AGREGÁ ESTA RUTA ACÁ:
+    // Historial (GET). Busca en MariaDB las compras del usuario logueado para mostrarlas en pantalla.
     Route::get('/mis-compras', [CarritoController::class, 'historial'])->name('compras.historial');
 });
 
@@ -121,7 +121,10 @@ Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.
 Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
 
 /////////////////////
-// Rutas de Registro (Públicas)
+
+// Muestra el formulario de registro visual para nuevos clientes.
 Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('registro');
+
+// Recibe los datos de registro, encripta la contraseña y crea el usuario en la base de datos.
 Route::post('/registro', [AuthController::class, 'register'])->name('registro.post');
 
