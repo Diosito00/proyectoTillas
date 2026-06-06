@@ -91,6 +91,79 @@ public function register(Request $request)
     // Redirigimos al catálogo con un mensaje de bienvenida
     return redirect()->route('catalogo')->with('success', '¡Cuenta creada con éxito! Bienvenido a Tillas.');
 }
+
+    /**
+     * Muestra el formulario para ingresar el correo de recuperación.
+     */
+    public function showOlvidoForm()
+    {
+        return view('olvido-password');
+    }
+
+    /**
+     * Procesa el correo enviado, simula buscarlo y pasa al formulario de nueva clave.
+     */
+    public function procesarOlvido(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresá un formato de correo válido.',
+        ]);
+
+        // Simulamos verificar si el usuario existe en MariaDB
+        $usuarioExiste = \App\Models\User::where('email', $request->email)->exists();
+
+        if (!$usuarioExiste) {
+            return back()->withErrors(['email' => 'El correo electrónico no se encuentra registrado en el sistema.'])->withInput();
+        }
+
+        // Pasamos a la siguiente etapa de la simulación guardando el email en la sesión temporal
+        return view('olvido-password', [
+            'paso' => 2,
+            'email' => $request->email
+        ]);
+    }
+
+    /**
+     * Procesa la nueva contraseña y actualiza el registro en la base de datos.
+     */
+  /**
+     * Procesa la nueva contraseña y actualiza el registro en la base de datos.
+     * Incluye una validación de seguridad para evitar reutilizar la misma clave.
+     */
+    public function procesarReinicio(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'password.required'  => 'La nueva contraseña es obligatoria.',
+            'password.min'       => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas ingresadas no coinciden.',
+        ]);
+
+        // Buscamos al usuario en MariaDB por su correo
+        $user = \App\Models\User::where('email', $request->email)->first();
+        
+        if ($user) {
+            // VALIDACIÓN DE SEGURIDAD NUEVA: 
+            // Hash::check compara el texto plano del formulario con el hash guardado en la base de datos
+            if (\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                return back()->withErrors(['password' => 'La nueva contraseña no puede ser igual a tu contraseña actual. Elegí una diferente.'])->withInput();
+            }
+
+            // Si pasa el filtro, actualizamos e ingresamos el nuevo hash
+            $user->password = \Illuminate\Support\Facades\Hash::make($request->password);
+            $user->save();
+
+            // Redirección con mensaje de éxito
+            return redirect()->route('login')->with('success', '¡Contraseña restablecida con éxito! Ya podés ingresar.');
+        }
+
+        return redirect()->route('password.request')->withErrors(['error' => 'Ocurrió un error inesperado. Reintentá el proceso.']);
+    }
 }
 
 

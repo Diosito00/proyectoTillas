@@ -29,4 +29,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * RELACIÓN ELOQUENT: Un usuario puede realizar muchas compras.
+     * Define una relación de uno a muchos (1 a N) con el modelo Venta.
+     */
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class);
+    }
 }

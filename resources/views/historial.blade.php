@@ -58,6 +58,10 @@
                             <span class="text-white-50 small d-block">Total abonado:</span>
                             <span class="fs-5 fw-bold text-warning">${{ number_format($compra->total, 0, ',', '.') }}</span>
                         </div>
+                            {{-- EL BOTÓN DE LA FACTURA --}}
+                            <a href="{{ route('compras.factura', ['id' => $compra->id]) }}" class="btn btn-outline-light btn-sm fw-bold px-3 rounded-3" target="_blank">
+                                <i class="bi bi-file-earmark-text me-1"></i> Ver Factura
+                            </a>
                     </div>
 
                     {{-- Cuerpo de la Tarjeta (Detalles de los productos) --}}

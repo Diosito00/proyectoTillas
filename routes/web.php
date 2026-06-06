@@ -1,4 +1,5 @@
 <?php
+
 // Importa la clase Route para definir rutas en Laravel
 use Illuminate\Support\Facades\Route;
 // Importa Request para manejar datos enviados en formularios (POST)
@@ -71,60 +72,57 @@ Route::get('/contacto/exito', function () {
     return view('contacto-exito');
 })->name('contacto.exito');
 
-// Route::get('/login', function () {
-//     return view('login');
-// });
 
-// Rutas de Autenticación (Públicas)
+// --- RUTAS DE AUTENTICACIÓN PÚBLICAS ---
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Todo lo que esté dentro de este grupo requiere iniciar sesión
-Route::middleware('auth')->group(function () {
-    
-    // Ruta para procesar el formulario cuando hacen clic en "Agregar al carrito"
-    Route::post('/carrito/agregar', [CarritoController::class, 'agregar'])->name('carrito.agregar');
-    
-    // Ruta para ver la página del carrito (la armaremos después)
-    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
-    
-    // Ruta para eliminar un producto específico del carrito
-    Route::post('/carrito/eliminar', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
 
-    // Ruta para procesar la compra final
-    Route::post('/checkout', [CarritoController::class, 'procesarCompra'])->name('checkout');
-
-    ////////////////////////////
-    // Muestra la pantalla de pago (GET). Calcula el total de productos y carga el formulario.
-    Route::get('/checkout', [CarritoController::class, 'mostrarCheckout'])->name('checkout.index');
-    
-    // Procesa la compra (POST). Guarda la cabecera en 'ventas' y cada producto en 'detalle_ventas'.
-    Route::post('/checkout/procesar', [CarritoController::class, 'procesarCompra'])->name('checkout.procesar');
-
-    // Historial (GET). Busca en MariaDB las compras del usuario logueado para mostrarlas en pantalla.
-    Route::get('/mis-compras', [CarritoController::class, 'historial'])->name('compras.historial');
-});
-
-// --- ZONA DE ADMINISTRACIÓN (VIP) ---
-Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
-    
-    // Ahora apunta al controlador y carga la vista real
-    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
-    
-});
-
-// Ruta para mostrar el formulario vacío
-Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
-    
-// Ruta oculta (POST) para recibir los datos del formulario y la foto
-Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
-
-/////////////////////
-
+// --- REGISTRO DE USUARIOS ---
 // Muestra el formulario de registro visual para nuevos clientes.
 Route::get('/registro', [AuthController::class, 'showRegisterForm'])->name('registro');
-
 // Recibe los datos de registro, encripta la contraseña y crea el usuario en la base de datos.
 Route::post('/registro', [AuthController::class, 'register'])->name('registro.post');
 
+
+// --- RECUPERACIÓN DE CONTRASEÑA ---
+// Muestra el formulario inicial para ingresar el correo
+Route::get('/olvido-contrasena', [AuthController::class, 'showOlvidoForm'])->name('password.request');
+// Procesa el correo enviado y simula la verificación de cuenta
+Route::post('/olvido-contrasena', [AuthController::class, 'procesarOlvido'])->name('password.email');
+// Actualiza la contraseña encriptada en la base de datos controlando que no se repita
+Route::post('/reiniciar-contrasena', [AuthController::class, 'procesarReinicio'])->name('password.update');
+
+
+// --- ZONA DE ADMINISTRACIÓN (VIP) ---
+Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
+    // Carga la vista real del panel de administración corporativo
+    Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+});
+
+// Ruta para mostrar el formulario vacío de carga de calzados
+Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
+// Ruta oculta (POST) para recibir los datos del formulario y la foto de la zapatilla
+Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
+
+
+// --- RUTAS DE COMPRA Y SESIÓN PROTEGIDAS (Solo Clientes Logueados) ---
+// Todo lo que esté dentro de este grupo requiere iniciar sesión obligatoriamente
+Route::middleware(['auth'])->group(function () {
+    
+    // Rutas del Carrito de Compras
+    Route::post('/carrito/agregar', [CarritoController::class, 'agregar'])->name('carrito.agregar');
+    Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
+    Route::post('/carrito/eliminar', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+
+    // Rutas del Checkout (Pantalla de Envío y Pago)
+    Route::get('/checkout', [CarritoController::class, 'mostrarCheckout'])->name('checkout');
+    Route::post('/checkout/procesar', [CarritoController::class, 'procesarCompra'])->name('checkout.procesar');
+
+    // Historial de Compras (Busca en MariaDB las compras del usuario logueado)
+    Route::get('/mis-compras', [CarritoController::class, 'historial'])->name('compras.historial');
+    
+    // Emisión de Comprobantes (Muestra la Factura B comercial dinámica usando el ID de compra)
+    Route::get('/compras/factura/{id}', [CarritoController::class, 'verFactura'])->name('compras.factura');
+});

@@ -272,7 +272,28 @@ foreach ($carrito as $key => $item) {
                     ->get();
 
     return view('historial', compact('compras'));
-}
+
+
+    }
+
+    /**
+     * Muestra la factura detallada de una venta específica.
+     * Busca la venta en MariaDB controlando por seguridad que pertenezca al usuario logueado.
+     */
+    public function verFactura($id)
+    {
+        // 1. Buscamos la venta por su ID cargando sus productos relacionados (Eager Loading)
+        $venta = Venta::with('detalles.producto')->findOrFail($id);
+
+        // 2. SEGURIDAD: Verificamos que la venta pertenezca al usuario que tiene la sesión iniciada.
+        // Esto evita que un alumno o usuario altere el ID en la URL para espiar facturas ajenas.
+        if ($venta->user_id !== auth()->id()) {
+            abort(403, 'Acceso no autorizado a este comprobante.');
+        }
+
+        // 3. Devolvemos la vista de la factura pasándole la variable del modelo encontrado
+        return view('factura', compact('venta'));
+    }
 }
 
     

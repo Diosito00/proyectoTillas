@@ -1,0 +1,37 @@
+/* public/css/style-factura.css */
+body { 
+    background-color: #f8f9fa; 
+    font-size: 14px; 
+}
+
+.invoice-box { 
+    max-width: 800px; 
+    margin: 30px auto; 
+    padding: 30px; 
+    background: #fff; 
+    border-radius: 8px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05); 
+}
+
+.invoice-logo { 
+    font-weight: 800; 
+    font-size: 28px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+}
+
+/* Regla especial para la impresión física o PDF */
+@media print {
+    .no-print { 
+        display: none !important; 
+    }
+    body { 
+        background-color: #fff; 
+    }
+    .invoice-box { 
+        box-shadow: none; 
+        margin: 0; 
+        padding: 0; 
+        max-width: 100%; 
+    }
+}
