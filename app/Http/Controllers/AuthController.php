@@ -28,8 +28,17 @@ class AuthController extends Controller
 
         // Intentamos loguearlo de verdad contra MariaDB
         if (Auth::attempt($credentials)) {
-            // Éxito: Regeneramos la sesión por seguridad y lo mandamos al catálogo
+            // Éxito: Regeneramos la sesión por seguridad
             $request->session()->regenerate();
+
+            // Verificamos el rol del usuario que acaba de iniciar sesión
+            if (Auth::user()->rol === 'admin') {
+                // Si es el dueño, lo mandamos directo a su panel
+                return redirect()->route('admin.index');
+            }
+
+            // Si es un cliente normal, lo mandamos al catálogo 
+            // (usamos 'intended' por si intentó entrar al carrito antes de loguearse)
             return redirect()->intended('/catalogo');
         }
 

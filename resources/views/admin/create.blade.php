@@ -33,11 +33,11 @@
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Nombre de la zapatilla</label>
-                                <input type="text" name="nombre" class="form-control" placeholder="Ej: Nike Air Force 1" required>
+                                <input type="text" name="nombre" class="form-control" placeholder="Ej: Topper Terre Kids" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Marca</label>
-                                <input type="text" name="marca" class="form-control" placeholder="Ej: Nike" required>
+                                <input type="text" name="marca" class="form-control" placeholder="Ej: Topper" required>
                             </div>
                         </div>
 
@@ -51,6 +51,17 @@
                                     <option value="nino">Niño</option>
                                 </select>
                             </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Deporte / Uso</label>
+                                <select name="deporte_uso" class="form-select" required>
+                                    <option value="" disabled selected>Seleccioná una...</option>
+                                    <option value="running">Running</option>
+                                    <option value="urbano">Urbano</option>
+                                    <option value="entrenamiento">Entrenamiento</option>
+                                </select>
+                            </div>
+
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Precio ($)</label>
                                 <input type="number" name="precio" class="form-control" step="0.01" placeholder="Ej: 85000" required>
@@ -69,10 +80,9 @@
                         </div>
 
                         <button type="submit" class="btn btn-dark w-100 py-3 fw-bold text-uppercase tracking-wide rounded-3">
-                            Guardar Zapatilla 
+                            Guardar 
                         </button>
                     </form>
-
                 </div>
             </div>
         </div>

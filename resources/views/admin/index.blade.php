@@ -19,10 +19,29 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold m-0"><i class="bi bi-shield-lock text-primary me-2"></i>Panel de Control</h2>
             
-            {{-- Este botón aún no hace nada, lo programaremos en el siguiente paso --}}
-            <a href="{{ route('admin.create') }}" class="btn btn-primary fw-bold">
-                <i class="bi bi-plus-lg me-2"></i>Nueva Zapatilla
-            </a>
+            <div class="d-flex gap-2">
+                {{-- Crear Administrador --}}
+                <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary fw-bold">
+                    <i class="bi bi-person-plus-fill me-2"></i>Nuevo Admin
+                </a>
+
+                {{-- Ver Ventas --}}
+                <a href="{{ route('admin.ventas') }}" class="btn btn-outline-success fw-bold">
+                    <i class="bi bi-currency-dollar me-2"></i>Ver Ventas
+                </a>
+                {{-- Ver Mensajes --}}
+                <a href="{{ route('admin.mensajes') }}" class="btn btn-outline-primary fw-bold">
+                    <i class="bi bi-envelope-fill me-2"></i>Bandeja de Entrada
+                </a>
+                {{-- Ver Usuarios --}}
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-dark fw-bold">
+                    <i class="bi bi-people-fill me-2"></i>Ver Usuarios
+                </a>
+                {{-- Nueva Zapatilla --}}
+                <a href="{{ route('admin.create') }}" class="btn btn-primary fw-bold">
+                    <i class="bi bi-plus-lg me-2"></i>Nueva Zapatilla
+                </a>
+            </div>
         </div>
 
         @if(session('success'))
@@ -61,14 +80,25 @@
                                     <td class="text-capitalize">{{ $producto->categoria }}</td>
                                     <td class="fw-bold">${{ number_format($producto->precio, 0, ',', '.') }}</td>
                                     <td class="pe-4 text-center">
-                                        {{-- Botones de acción (Aún sin conexión) --}}
+                                        {{-- Botones de acción--}}
                                         <div class="btn-group shadow-sm">
-                                            <a href="/en-proceso" class="btn btn-sm btn-outline-dark" title="Editar">
+                                            {{-- Botón Talles y Cantidad --}}
+                                            <a href="{{ route('admin.talles', $producto->id) }}" class="btn btn-sm btn-outline-success" title="Gestionar Stock">
+                                                <i class="bi bi-box-seam"></i>
+                                            </a>
+                                            {{-- Botón Modificar --}}
+                                            <a href="{{ route('admin.edit', $producto->id) }}" class="btn btn-sm btn-outline-dark" title="Modificar">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
+                                            
+                                            {{-- Botón Baja Lógica (Formulario protegido) --}}
+                                            <form action="{{ route('admin.destroy', $producto->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Dar de baja este producto del catálogo?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-start-0" title="Baja">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>

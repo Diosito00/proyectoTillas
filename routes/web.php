@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\CarritoController;
+use App\Http\Controllers\ContactoController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
 
@@ -99,13 +100,27 @@ Route::post('/reiniciar-contrasena', [AuthController::class, 'procesarReinicio']
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
     // Carga la vista real del panel de administración corporativo
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    // Ruta para ver el listado de usuarios
+    Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
+    // Rutas para que el admin cree otros administradores
+    Route::get('/usuarios/nuevo', [AdminController::class, 'createUsuario'])->name('admin.usuarios.create');
+    Route::post('/usuarios/nuevo', [AdminController::class, 'storeUsuario'])->name('admin.usuarios.store');
+    // Ruta para mostrar el formulario vacío de carga de calzados
+    Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
+    // Ruta oculta (POST) para recibir los datos del formulario y la foto de la zapatilla
+    Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
+    // Rutas para gestionar el stock de un producto específico
+    Route::get('/productos/{id}/talles', [AdminController::class, 'talles'])->name('admin.talles');
+    Route::post('/productos/{id}/talles', [AdminController::class, 'guardarTalle'])->name('admin.talles.store');
+    // Rutas para Modificaciones (U) y Baja (D)
+    Route::get('/productos/{id}/editar', [AdminController::class, 'edit'])->name('admin.edit');
+    Route::put('/productos/{id}', [AdminController::class, 'update'])->name('admin.update');
+    Route::delete('/productos/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+    // Bandeja de entrada de contactos
+    Route::get('/mensajes', [AdminController::class, 'mensajes'])->name('admin.mensajes');
+    // Historial de ventas realizadas
+    Route::get('/ventas', [AdminController::class, 'ventas'])->name('admin.ventas');
 });
-
-// Ruta para mostrar el formulario vacío de carga de calzados
-Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
-// Ruta oculta (POST) para recibir los datos del formulario y la foto de la zapatilla
-Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
-
 
 // --- RUTAS DE COMPRA Y SESIÓN PROTEGIDAS (Solo Clientes Logueados) ---
 // Todo lo que esté dentro de este grupo requiere iniciar sesión obligatoriamente
@@ -126,3 +141,5 @@ Route::middleware(['auth'])->group(function () {
     // Emisión de Comprobantes (Muestra la Factura B comercial dinámica usando el ID de compra)
     Route::get('/compras/factura/{id}', [CarritoController::class, 'verFactura'])->name('compras.factura');
 });
+
+Route::post('/contacto', [ContactoController::class, 'store'])->name('contacto.store');

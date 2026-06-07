@@ -30,7 +30,7 @@
         <div class="row align-items-center border-bottom pb-4 mb-4">
             <div class="col-6">
                 <span class="invoice-logo text-dark">Tillas <i class="bi bi-radial-gradient"></i></span>
-                <p class="text-muted small mb-0">Tienda Oficial de Calzado Urbano<br>Buenos Aires, Argentina</p>
+                <p class="text-muted small mb-0">Tienda Oficial de Calzado Urbano<br>Corrientes, Argentina</p>
             </div>
             <div class="col-6 text-end">
                 <h4 class="fw-bold text-uppercase text-secondary mb-1">Factura B</h4>

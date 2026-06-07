@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Pedido;
-use App\Models\PedidoDetalle;
 use App\Models\Producto;
 use App\Models\ProductoTalle;
 use App\Models\Venta;
@@ -187,7 +185,7 @@ public function mostrarCheckout()
         $total += $item['precio'] * $item['cantidad'];
     }
 
-return view('checkout', compact('carrito', 'total'));
+    return view('checkout', compact('carrito', 'total'));
 }
 
 /**

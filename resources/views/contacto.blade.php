@@ -60,7 +60,7 @@
                     @endif
                     
                     <!-- form: formulario  action: ruta Laravel method="POST": envío de datos -->
-                    <form action="{{ route('contacto.enviar') }}" method="POST">
+                    <form action="{{ route('contacto.store') }}" method="POST">
                         <!-- Token de seguridad contra ataques -->
                         @csrf 
                         

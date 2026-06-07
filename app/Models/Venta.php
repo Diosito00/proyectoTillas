@@ -31,4 +31,10 @@ class Venta extends Model
     {
         return 'FAC-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
     }
+
+    // Un pedido pertenece a un usuario específico
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
