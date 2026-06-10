@@ -46,7 +46,7 @@
                 <p class="card-text fw-bold fs-5 mb-3">${{ $precio }}</p>
             @endif
             
-            <a href="{{ route('producto.show', $id) }}" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Ver Detalles</a>
+            <a href="{{ route('producto.show', $id) }}" class="btn btn-dark w-100 fw-bold text-uppercase btn-comprar">Ver Detalles</a>
         </div>
     </div>
 </div>

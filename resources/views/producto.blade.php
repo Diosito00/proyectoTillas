@@ -11,7 +11,7 @@
 <body>
     <x-navbar/>
 
-    <div class="container py-5 my-5">
+    <div class="container py-2 my-2">
     {{-- Alerta de Éxito al agregar al carrito --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert">
@@ -22,6 +22,12 @@
                 <a href="{{ route('carrito.index') }}" class="btn btn-sm btn-success ms-3 fw-bold text-uppercase">
                     Ver Carrito <i class="bi bi-arrow-right"></i>
                 </a>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger mb-4 rounded-3 border-0">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
             </div>
         @endif
 
@@ -43,28 +49,31 @@
                 
                 <p class="text-muted mb-5 lh-lg">{{ $producto->descripcion }}</p>
 
-                <form action="{{ route('carrito.agregar') }}" method="POST">
-                    @csrf <input type="hidden" name="producto_id" value="{{ $producto->id }}">
-                    
-                    <div class="mb-4">
-                        <label for="talle" class="fw-bold mb-2">Seleccioná tu talle:</label>
-                        <select name="talle_id" id="talle" class="form-select form-select-lg rounded-0 border-dark" required>
+                <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
+                    @csrf 
+                    <input type="hidden" name="producto_id" value="{{ $producto->id }}">               
+                    {{-- Selector de Talle con información visible --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Seleccioná tu talle:</label>
+                        <select name="talle_id" class="form-select rounded-3" required>
                             <option value="" disabled selected>Elegí un talle</option>
-                            
-                            {{-- Recorremos los talles de ESTA zapatilla --}}
                             @foreach($producto->talles as $talle)
                                 @if($talle->stock > 0)
-                                    <option value="{{ $talle->id }}">Talle {{ $talle->talle }}</option>
-                                @else
-                                    <option value="{{ $talle->id }}" disabled>Talle {{ $talle->talle }} - Sin stock</option>
+                                    <option value="{{ $talle->id }}">
+                                        Talle {{ $talle->talle }} (Quedan {{ $talle->stock }} pares)
+                                    </option>
                                 @endif
                             @endforeach
-
                         </select>
                     </div>
-
-                    <button type="submit" class="btn btn-dark btn-lg w-100 rounded-0 fw-bold text-uppercase tracking-wide py-3">
-                        Agregar al carrito <i class="bi bi-cart-plus ms-2"></i>
+                    {{-- Input de Cantidad Libre --}}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Cantidad:</label>
+                        <input type="number" name="cantidad" class="form-control text-center rounded-3" value="1" min="1" style="width: 100px;" required>
+                        <small class="text-muted mt-1 d-block">Ingresá una cantidad menor o igual al stock del talle elegido.</small>
+                    </div>
+                    <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-3">
+                        AGREGAR AL CARRITO <i class="bi bi-cart-plus ms-2"></i>
                     </button>
                 </form>
             </div>

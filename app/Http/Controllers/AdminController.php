@@ -13,13 +13,35 @@ use App\Models\Venta;
 
 class AdminController extends Controller
 {
+    // Carga el Tablero de Control (Dashboard)
     public function index()
     {
-        // Traemos todos los productos ordenados por el más nuevo primero
+        // 1. Calculamos los KPIs (Indicadores Clave)
+        $totalVentas = Venta::sum('total'); // Suma todo el dinero ingresado
+        $totalProductos = Producto::count(); // Zapatillas en catálogo
+        $totalUsuarios = User::where('rol', 'cliente')->count(); // Solo cuenta a los clientes
+        
+        // Alertas: Contamos cuántos talles tienen 5 o menos pares en stock
+        $alertasStock = ProductoTalle::where('stock', '<=', 5)->count();
+
+        // 2. Traemos la actividad reciente (solo los últimos 5 registros)
+        $ultimasVentas = Venta::with('user')->orderBy('created_at', 'desc')->take(5)->get();
+        $ultimosMensajes = Contacto::orderBy('created_at', 'desc')->take(5)->get();
+
+        // Enviamos todo a la vista
+        return view('admin.index', compact(
+            'totalVentas', 'totalProductos', 'totalUsuarios', 'alertasStock',
+            'ultimasVentas', 'ultimosMensajes'
+        ));
+    }
+
+    // Carga la tabla completa del inventario
+    public function inventario()
+    {
+        // Traemos todos los productos ordenados por los más recientes
         $productos = Producto::orderBy('created_at', 'desc')->paginate(10);
         
-        // Retornamos una vista nueva (que crearemos en el paso 3)
-        return view('admin.index', compact('productos'));
+        return view('admin.inventario', compact('productos'));
     }
 
     // Muestra el formulario
@@ -198,6 +220,26 @@ class AdminController extends Controller
         $usuario->save(); // Guardamos en MariaDB
 
         return redirect()->route('admin.usuarios')->with('success', '¡Nuevo usuario administrador creado con éxito!');
+    }
+
+    // Actualizar el rol de un usuario (Admin <-> Cliente)
+    public function updateRol(Request $request, $id)
+    {
+        $usuario = User::findOrFail($id);
+
+        $request->validate([
+            'rol' => 'required|in:admin,cliente',
+        ]);
+
+        // PROTECCIÓN: Evitar que el administrador activo se quite sus propios permisos
+        if ($usuario->id === auth()->id() && $request->rol === 'cliente') {
+            return back()->withErrors(['error' => 'Por seguridad, no puedes quitarte tus propios permisos de administrador.']);
+        }
+
+        $usuario->rol = $request->rol;
+        $usuario->save();
+
+        return back()->with('success', 'El rol de ' . $usuario->name . ' ha sido actualizado a ' . strtoupper($request->rol) . '.');
     }
 
     // Mostrar la bandeja de entrada de consultas

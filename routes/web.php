@@ -100,24 +100,36 @@ Route::post('/reiniciar-contrasena', [AuthController::class, 'procesarReinicio']
 Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(function () {
     // Carga la vista real del panel de administración corporativo
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+    
+    // La tabla de Inventario
+    Route::get('/inventario', [AdminController::class, 'inventario'])->name('admin.inventario');
+
     // Ruta para ver el listado de usuarios
     Route::get('/usuarios', [AdminController::class, 'usuarios'])->name('admin.usuarios');
+    
     // Rutas para que el admin cree otros administradores
     Route::get('/usuarios/nuevo', [AdminController::class, 'createUsuario'])->name('admin.usuarios.create');
     Route::post('/usuarios/nuevo', [AdminController::class, 'storeUsuario'])->name('admin.usuarios.store');
+    Route::put('/usuarios/{id}/rol', [AdminController::class, 'updateRol'])->name('admin.usuarios.updateRol');
+    
     // Ruta para mostrar el formulario vacío de carga de calzados
     Route::get('/productos/crear', [AdminController::class, 'create'])->name('admin.create');
+    
     // Ruta oculta (POST) para recibir los datos del formulario y la foto de la zapatilla
     Route::post('/productos', [AdminController::class, 'store'])->name('admin.store');
+    
     // Rutas para gestionar el stock de un producto específico
     Route::get('/productos/{id}/talles', [AdminController::class, 'talles'])->name('admin.talles');
     Route::post('/productos/{id}/talles', [AdminController::class, 'guardarTalle'])->name('admin.talles.store');
+    
     // Rutas para Modificaciones (U) y Baja (D)
     Route::get('/productos/{id}/editar', [AdminController::class, 'edit'])->name('admin.edit');
     Route::put('/productos/{id}', [AdminController::class, 'update'])->name('admin.update');
     Route::delete('/productos/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+    
     // Bandeja de entrada de contactos
     Route::get('/mensajes', [AdminController::class, 'mensajes'])->name('admin.mensajes');
+    
     // Historial de ventas realizadas
     Route::get('/ventas', [AdminController::class, 'ventas'])->name('admin.ventas');
 });

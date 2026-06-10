@@ -13,49 +13,48 @@
     
     <x-navbar/>
 
-    <div class="container py-4 px-lg-5">
-        
-        <div class="mb-4 d-flex justify-content-between align-items-center">
-            <h2 class="fw-bold m-0"><i class="bi bi-envelope-paper-fill text-primary me-2"></i>Consultas Recibidas</h2>
-            
-            <a href="{{ route('admin.index') }}" class="btn btn-outline-dark fw-bold">
-                <i class="bi bi-arrow-left me-2"></i>Volver al Panel
-            </a>
-        </div>
-
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush">
-                    @forelse($mensajes as $mensaje)
-                        <div class="list-group-item list-group-item-action p-4 border-bottom">
-                            <div class="d-flex w-100 justify-content-between align-items-center mb-2">
-                                <h5 class="mb-1 fw-bold">
-                                    <i class="bi bi-person-circle text-secondary me-2"></i>{{ $mensaje->nombre }}
-                                </h5>
-                                <small class="text-muted fw-bold">{{ $mensaje->created_at->format('d/m/Y H:i') }}</small>
-                            </div>
-                            <h6 class="mb-3 text-primary"><i class="bi bi-envelope-at me-2"></i>{{ $mensaje->email }}</h6>
-                            
-                            {{-- Contenedor del mensaje con diseño de "cita" --}}
-                            <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
-                                <p class="mb-0" style="white-space: pre-wrap;">{{ $mensaje->mensaje }}</p>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="text-center py-5 text-muted">
-                            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
-                            <h5 class="fw-bold">Bandeja Vacía</h5>
-                            <p>Aún no has recibido consultas a través del formulario de contacto.</p>
-                        </div>
-                    @endforelse
+    <div class="container-fluid">
+        <div class="row">
+            <x-sidebar/>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-4">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <h2 class="fw-bold m-0"><i class="bi bi-envelope-paper-fill text-primary me-2"></i>Consultas Recibidas</h2>
                 </div>
-            </div>
-            
-            <div class="card-footer bg-white border-0 py-3">
-                {{ $mensajes->links() }}
-            </div>
-        </div>
 
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            @forelse($mensajes as $mensaje)
+                                <div class="list-group-item list-group-item-action p-4 border-bottom">
+                                    <div class="d-flex w-100 justify-content-between align-items-center mb-2">
+                                        <h5 class="mb-1 fw-bold">
+                                            <i class="bi bi-person-circle text-secondary me-2"></i>{{ $mensaje->nombre }}
+                                        </h5>
+                                        <small class="text-muted fw-bold">{{ $mensaje->created_at->format('d/m/Y H:i') }}</small>
+                                    </div>
+                                    <h6 class="mb-3 text-primary"><i class="bi bi-envelope-at me-2"></i>{{ $mensaje->email }}</h6>
+                                    
+                                    {{-- Contenedor del mensaje con diseño de "cita" --}}
+                                    <div class="p-3 bg-light rounded-3 border-start border-4 border-primary">
+                                        <p class="mb-0" style="white-space: pre-wrap;">{{ $mensaje->mensaje }}</p>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+                                    <h5 class="fw-bold">Bandeja Vacía</h5>
+                                    <p>Aún no has recibido consultas a través del formulario de contacto.</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white border-0 py-3">
+                        {{ $mensajes->links() }}
+                    </div>
+                </div>
+            </main>    
+        </div> 
     </div>
 
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

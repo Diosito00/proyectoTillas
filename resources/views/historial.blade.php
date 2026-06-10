@@ -13,7 +13,7 @@
     {{-- Componente global de la barra de navegación --}}
     <x-navbar/>
 
-    <div class="container py-5" style="margin-top: 80px;">
+    <div class="container py-2" style="margin-top: 80px;">
         {{-- ENCABEZADO DE PANTALLA --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold mb-0"><i class="bi bi-bag-check text-dark me-2"></i>Mis Compras</h2>

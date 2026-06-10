@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración | Tillas</title>
+    <title>Panel de Control | Tillas</title>
     <link rel="icon" href="{{ asset('imagenes/Logo-blanco.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('vendor/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -11,115 +11,136 @@
 </head>
 <body class="bg-light">
     
-    {{-- Reutilizamos tu Navbar --}}
     <x-navbar/>
 
-    <div class="container-fluid py-4 px-lg-5">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="fw-bold m-0"><i class="bi bi-shield-lock text-primary me-2"></i>Panel de Control</h2>
-            
-            <div class="d-flex gap-2">
-                {{-- Crear Administrador --}}
-                <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary fw-bold">
-                    <i class="bi bi-person-plus-fill me-2"></i>Nuevo Admin
-                </a>
+    <div class="container-fluid">
+        <div class="row">
+            <x-sidebar/>
 
-                {{-- Ver Ventas --}}
-                <a href="{{ route('admin.ventas') }}" class="btn btn-outline-success fw-bold">
-                    <i class="bi bi-currency-dollar me-2"></i>Ver Ventas
-                </a>
-                {{-- Ver Mensajes --}}
-                <a href="{{ route('admin.mensajes') }}" class="btn btn-outline-primary fw-bold">
-                    <i class="bi bi-envelope-fill me-2"></i>Bandeja de Entrada
-                </a>
-                {{-- Ver Usuarios --}}
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-dark fw-bold">
-                    <i class="bi bi-people-fill me-2"></i>Ver Usuarios
-                </a>
-                {{-- Nueva Zapatilla --}}
-                <a href="{{ route('admin.create') }}" class="btn btn-primary fw-bold">
-                    <i class="bi bi-plus-lg me-2"></i>Nueva Zapatilla
-                </a>
-            </div>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-        
-        {{-- Tabla de Inventario --}}
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th class="ps-4 py-3">ID</th>
-                                <th class="py-3">Producto</th>
-                                <th class="py-3">Marca</th>
-                                <th class="py-3">Categoría</th>
-                                <th class="py-3">Precio</th>
-                                <th class="pe-4 py-3 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($productos as $producto)
-                                <tr>
-                                    <td class="ps-4 text-muted fw-bold">#{{ $producto->id }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="{{ asset('imagenes/' . $producto->imagen_url) }}" alt="{{ $producto->nombre }}" width="40" height="40" class="rounded object-fit-cover me-3">
-                                            <span class="fw-bold">{{ $producto->nombre }}</span>
-                                        </div>
-                                    </td>
-                                    <td><span class="badge bg-secondary">{{ $producto->marca }}</span></td>
-                                    <td class="text-capitalize">{{ $producto->categoria }}</td>
-                                    <td class="fw-bold">${{ number_format($producto->precio, 0, ',', '.') }}</td>
-                                    <td class="pe-4 text-center">
-                                        {{-- Botones de acción--}}
-                                        <div class="btn-group shadow-sm">
-                                            {{-- Botón Talles y Cantidad --}}
-                                            <a href="{{ route('admin.talles', $producto->id) }}" class="btn btn-sm btn-outline-success" title="Gestionar Stock">
-                                                <i class="bi bi-box-seam"></i>
-                                            </a>
-                                            {{-- Botón Modificar --}}
-                                            <a href="{{ route('admin.edit', $producto->id) }}" class="btn btn-sm btn-outline-dark" title="Modificar">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </a>
-                                            
-                                            {{-- Botón Baja Lógica (Formulario protegido) --}}
-                                            <form action="{{ route('admin.destroy', $producto->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Dar de baja este producto del catálogo?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger border-start-0" title="Baja">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        No hay productos registrados en la base de datos.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-4">
+                
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-2 pb-3 mb-4 border-bottom">
+                    <div>
+                        <h1 class="fw-bold m-0 text-dark">¡Hola, {{ Auth::user()->name ?? 'Administrador' }}! 👋</h1>
+                        <p class="text-muted mt-1 mb-0">Bienvenido al panel de control de Tillas. Aquí tienes el resumen de tu negocio.</p>
+                    </div>
                 </div>
-            </div>
-            
-            {{-- Paginación de Laravel --}}
-            <div class="card-footer bg-white border-0 py-3">
-                {{ $productos->links() }}
-            </div>
-        </div>
 
+                {{-- 1. Tarjetas de Resumen (KPIs) --}}
+                <div class="row g-3 mb-5">
+                    
+                    {{-- Tarjeta: Dinero Ingresado --}}
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card bg-success text-white border-0 shadow-sm rounded-4 p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-uppercase tracking-wide">Ingresos Totales</h6>
+                                <i class="bi bi-cash-coin fs-3 opacity-50"></i>
+                            </div>
+                            <h2 class="fw-bold mb-0">${{ number_format($totalVentas, 0, ',', '.') }}</h2>
+                        </div>
+                    </div>
+
+                    {{-- Tarjeta: Zapatillas Activas --}}
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card bg-primary text-white border-0 shadow-sm rounded-4 p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-uppercase tracking-wide">Catálogo</h6>
+                                <i class="bi bi-box-seam fs-3 opacity-50"></i>
+                            </div>
+                            <h2 class="fw-bold mb-0">{{ $totalProductos }} <span class="fs-6 fw-normal">Modelos</span></h2>
+                        </div>
+                    </div>
+
+                    {{-- Tarjeta: Usuarios Registrados --}}
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card bg-dark text-white border-0 shadow-sm rounded-4 p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-uppercase tracking-wide">Clientes</h6>
+                                <i class="bi bi-people-fill fs-3 opacity-50"></i>
+                            </div>
+                            <h2 class="fw-bold mb-0">{{ $totalUsuarios }} <span class="fs-6 fw-normal">Cuentas</span></h2>
+                        </div>
+                    </div>
+
+                    {{-- Tarjeta: Alertas de Stock --}}
+                    <div class="col-md-6 col-xl-3">
+                        <div class="card {{ $alertasStock > 0 ? 'bg-danger' : 'bg-secondary' }} text-white border-0 shadow-sm rounded-4 p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold mb-0 text-uppercase tracking-wide">Alertas de Stock</h6>
+                                <i class="bi bi-exclamation-triangle-fill fs-3 opacity-50"></i>
+                            </div>
+                            <h2 class="fw-bold mb-0">{{ $alertasStock }} <span class="fs-6 fw-normal">Talles bajos</span></h2>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- 2. Tablas de Actividad Reciente --}}
+                <div class="row g-4 mb-4">
+                    
+                    {{-- Columna Izquierda: Últimas 5 Ventas --}}
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold m-0"><i class="bi bi-cart-check-fill text-success me-2"></i>Últimas Ventas</h5>
+                                <a href="{{ route('admin.ventas') }}" class="btn btn-sm btn-outline-dark fw-bold rounded-pill px-3">Ver todo</a>
+                            </div>
+                            <div class="card-body p-0 mt-2">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light text-muted small text-uppercase">
+                                            <tr>
+                                                <th class="ps-4 py-3">Cliente</th>
+                                                <th class="py-3">Fecha</th>
+                                                <th class="pe-4 py-3 text-end">Monto</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse($ultimasVentas as $venta)
+                                                <tr>
+                                                    <td class="ps-4 fw-bold">{{ $venta->user->name ?? 'Usuario Eliminado' }}</td>
+                                                    <td class="text-muted small">{{ $venta->created_at->format('d/m/Y') }}</td>
+                                                    <td class="pe-4 text-end fw-bold text-success">${{ number_format($venta->total, 0, ',', '.') }}</td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="3" class="text-center py-4 text-muted">Aún no hay ventas registradas.</td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Columna Derecha: Últimos Mensajes --}}
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm rounded-4 h-100 overflow-hidden">
+                            <div class="card-header bg-white border-bottom-0 pt-4 pb-2 px-4 d-flex justify-content-between align-items-center">
+                                <h5 class="fw-bold m-0"><i class="bi bi-chat-left-text-fill text-primary me-2"></i>Mensajes Recientes</h5>
+                                <a href="{{ route('admin.mensajes') }}" class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3">Ver inbox</a>
+                            </div>
+                            <div class="card-body p-0 mt-2">
+                                <div class="list-group list-group-flush">
+                                    @forelse($ultimosMensajes as $mensaje)
+                                        <div class="list-group-item px-4 py-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-bold">{{ $mensaje->nombre }}</span>
+                                                <small class="text-muted">{{ $mensaje->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <p class="mb-0 small text-truncate text-muted" style="max-width: 250px;">{{ $mensaje->mensaje }}</p>
+                                        </div>
+                                    @empty
+                                        <div class="text-center py-4 text-muted">No hay mensajes recientes en la bandeja.</div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>

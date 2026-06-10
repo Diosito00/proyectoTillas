@@ -98,7 +98,6 @@
             </div>
         </div>
 
-        {{-- Pie de página de validez académica --}}
         <div class="text-center border-top pt-4 mt-5">
             <p class="text-muted small mb-0">Gracias por tu compra en Tillas.</p>
         </div>
