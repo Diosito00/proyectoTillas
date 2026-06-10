@@ -229,7 +229,7 @@
                 <h3 class="fw-bold mb-3">¿Todo listo para estrenar tus próximas Tillas?</h3>
                 <p class="text-muted mb-4">Descubrí los últimos ingresos y aprovechá nuestras cuotas sin interés.</p>
                 <!-- href: ruta btn-dark: botón negro btn-lg: grande rounded-0: sin bordes redondeados px-5: padding horizontal tracking-wide: separación de letras -->
-                <a href="{{ route('catalogo') }}" class="btn btn-dark btn-lg rounded-0 px-5 fw-bold text-uppercase tracking-wide">
+                <a href="{{ route('catalogo') }}" class="btn btn-dark btn-lg px-5 fw-bold text-uppercase tracking-wide">
                     Ir a la tienda
                 </a>
             </div>  

@@ -117,93 +117,31 @@
         
         {{-- Sección de Nuevos Ingresos --}}
         <section class="container py-5">
-            {{-- d-flex justify-content-between: Coloca el título "Nuevos Ingresos" a la izquierda y el enlace "Ver todos" a la extrema derecha. --}}
             <div class="d-flex justify-content-between align-items-end mb-4">
                 <h3 class="fw-bold mb-0 text-uppercase">Nuevos Ingresos</h3>
                 <a href="{{ route('catalogo') }}" class="text-dark text-decoration-none fw-bold border-bottom border-dark pb-1 small text-uppercase tracking-wide">Ver todos</a>
             </div>
             
             <div class="row g-4">
-                
-                {{-- Responsive de Productos. --}}
-                <!-- Columna responsive: 1 en celular, 2 en tablet, 4 en desktop -->
-                <div class="col-12 col-md-6 col-lg-3">
-                    <!-- Card de producto, border-0: sin borde, h-100: altura completa -->
-                    <div class="card product-card border-0 h-100">
-                        <!-- Contenedor de imagen  position-relative: base para elementos encima -->
-                        <div class="position-relative bg-light rounded overflow-hidden">
-                            <!--badge:etiqueta.bg-dark text-white: fondo negro, texto blanco.position-absolute:encima de la imagen. top-0 start-0: arriba izquierda. m-3: margen. z-1: se asegura que esté por encima. -->
-                            <span class="badge bg-dark text-white position-absolute top-0 start-0 m-3 z-1 px-2 py-1">NUEVO</span>
-                            <!-- Imagen del producto -->
-                            <img src="{{ asset('imagenes/Puma-v-n-3.jpg') }}" class="card-img-top product-img" alt="Puma Velocity">
-                        </div>
-                        <div class="card-body px-0 pb-0">
-                            <p class="text-muted small mb-1 text-uppercase tracking-wide">Puma</p>
-                            {{-- fs-6 y fs-5: Controlan el tamaño de fuente (font-size). --}}
-                            <!-- Nombre del producto -->
-                            <h5 class="card-title fw-bold mb-1 fs-6">Puma Velocity Nitro 3</h5>
-                            <p class="card-text fw-bold fs-5 mb-3">$125.000</p>
-                            <!-- Botón de compra -->
-                            <a href="/en-proceso" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Agregar al carrito</a>
-                        </div>
+                {{-- Bucle Dinámico: Recorre los últimos 4 productos --}}
+                @forelse($nuevosProductos as $producto)
+                    <div class="col-12 col-md-6 col-lg-3">
+                        {{-- Llamamos a tu componente de tarjeta pasándole el producto --}}
+                        {{-- Le pasamos cada dato individualmente como espera el @props --}}
+                        <x-product-card 
+                            :id="$producto->id"
+                            :marca="$producto->marca"
+                            :nombre="$producto->nombre"
+                            :precio="number_format($producto->precio, 0, ',', '.')"
+                            :imagen="'imagenes/' . $producto->imagen_url"
+                            :nuevo="true" 
+                        />
                     </div>
-                </div>
-
-                <!-- Columna responsive: 1 en celular, 2 en tablet, 4 en desktop -->
-                <div class="col-12 col-md-6 col-lg-3">
-                    <!-- Card de producto, border-0: sin borde, h-100: altura completa -->
-                    <div class="card product-card border-0 h-100">
-                        <!-- Contenedor de imagen  position-relative: base para elementos encima -->
-                        <div class="position-relative bg-light rounded overflow-hidden">
-                            <!-- Imagen del producto -->
-                            <img src="{{ asset('imagenes/Puma-Salehe-b-v-n-u.jpg') }}" class="card-img-top product-img" alt="Nike Air Zoom">
-                        </div>
-                        
-                        <div class="card-body px-0 pb-0">
-                            <p class="text-muted small mb-1 text-uppercase tracking-wide">Puma</p>
-                            <!-- Nombre del producto -->
-                            <h5 class="card-title fw-bold mb-1 fs-6">Puma x Salehe Bembury</h5>
-                            <p class="card-text fw-bold fs-5 mb-3">$145.000</p>
-                            <!-- Botón de compra -->
-                            <a href="/en-proceso" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Agregar al carrito</a>
-                        </div>
+                @empty
+                    <div class="col-12 text-center py-5 text-muted">
+                        <p>No hay productos disponibles por el momento.</p>
                     </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card product-card border-0 h-100">
-                        <div class="position-relative bg-light rounded overflow-hidden">
-                            {{-- Etiqueta de descuento --}}
-                            <span class="badge bg-danger text-white position-absolute top-0 start-0 m-3 z-1 px-2 py-1">-15%</span>
-                            <img src="{{ asset('imagenes/Topper-c-m.jpg') }}" class="card-img-top product-img" alt="Adidas Ultraboost">
-                        </div>
-                        <div class="card-body px-0 pb-0">
-                            <p class="text-muted small mb-1 text-uppercase tracking-wide">Topper</p>
-                            <h5 class="card-title fw-bold mb-1 fs-6">Topper Core Mesh</h5>
-                            <div class="d-flex align-items-center gap-2 mb-3">
-                                <p class="card-text fw-bold fs-5 mb-0">$180.000</p>
-                                {{-- text-decoration-line-through: Tacha el texto (ideal para precios viejos). --}}
-                                <p class="text-decoration-line-through text-muted small mb-0">$211.000</p>
-                            </div>
-                            <a href="/en-proceso" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-md-6 col-lg-3">
-                    <div class="card product-card border-0 h-100">
-                        <div class="position-relative bg-light rounded overflow-hidden">
-                            <img src="{{ asset('imagenes/Topper-f-2.jpg') }}" class="card-img-top product-img" alt="New Balance 550">
-                        </div>
-                        <div class="card-body px-0 pb-0">
-                            <p class="text-muted small mb-1 text-uppercase tracking-wide">Topper</p>
-                            <h5 class="card-title fw-bold mb-1 fs-6">Topper Fast 2.0</h5>
-                            <p class="card-text fw-bold fs-5 mb-3">$160.000</p>
-                            <a href="/en-proceso" class="btn btn-dark w-100 fw-bold text-uppercase rounded-0 btn-comprar">Agregar al carrito</a>
-                        </div>
-                    </div>
-                </div>
-
+                @endforelse
             </div>
         </section>
 

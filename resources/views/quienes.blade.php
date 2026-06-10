@@ -138,7 +138,7 @@
                 <h4 class="fw-bold mb-3">¿Listo para encontrar tu estilo?</h4>
                 <p class="text-muted mb-4">Ya conocés nuestra historia, ahora te invitamos a conocer nuestros productos.</p>
                 <!-- a: enlace route('catalogo'): ruta Laravel btn-dark: boton negro btn-lg: grande rounded-0: sin bordes redondeados px-5: padding horizontal fw-bold: negrita -->
-                <a href="{{ route('catalogo') }}" class="btn btn-dark btn-lg rounded-0 px-5 fw-bold text-uppercase">
+                <a href="{{ route('catalogo') }}" class="btn btn-dark btn-lg px-5 fw-bold text-uppercase">
                     Ver el Catálogo
                 </a>
             </div>

@@ -82,7 +82,7 @@
                         </div>
 
                         <!-- btn-dark: negro  btn-lg: grande  w-100: ancho completo  rounded-0: sin bordes redondeados py-3: padding vertical -->
-                        <button type="submit" class="btn btn-dark btn-lg w-100 rounded-0 text-uppercase fw-bold tracking-wide py-3">
+                        <button type="submit" class="btn btn-dark btn-lg w-100 text-uppercase fw-bold tracking-wide py-3">
                             Enviar Mensaje 
                             <!-- ícono enviar -->
                             <i class="bi bi-send ms-2"></i>

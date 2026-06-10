@@ -12,6 +12,7 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\AdminController;
+use App\Models\Producto;
 
 // Ruta principal del sitio ("/")
 // Cuando alguien entra a la raíz, devuelve la vista 'inicio'
@@ -20,9 +21,13 @@ Route::get('/', function () {
 });
 
 // Ruta "/quienes" que muestra la vista 'quienes'
-Route::get('/quienes', function(){
-    return view('quienes');
-});
+Route::get('/', function () {
+    // Traemos los 4 productos más recientes (ordenados por fecha de creación)
+    $nuevosProductos = Producto::orderBy('created_at', 'desc')->take(4)->get();
+    
+    // Se los enviamos a la vista
+    return view('inicio', compact('nuevosProductos'));
+})->name('inicio');
 
 // Ruta "/comercializacion" que muestra la vista correspondiente
 Route::get('/comercializacion', function(){
