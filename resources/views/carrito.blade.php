@@ -33,7 +33,7 @@
                                         <th class="ps-4 py-3">Producto</th>
                                         <th class="py-3 text-center">Talle</th>
                                         <th class="py-3 text-center">Cantidad</th>
-                                        <th class="py-3 text-end pe-4">Subtotal</th>
+                                        <th class="py-3 text-end pe-4">Precio unitario</th>
                                         <th class="py-3 text-center"></th> {{-- Columna para el botón eliminar --}}
                                     </tr>
                                 </thead>
@@ -47,7 +47,7 @@
                                             <td class="py-3 text-center text-muted">{{ $item['talle'] }}</td>
                                             <td class="py-3 text-center fw-bold">{{ $item['cantidad'] }}</td>
                                             <td class="py-3 text-end pe-4 fw-bold">
-                                                ${{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}
+                                                ${{ number_format($item['precio'], 0, ',', '.') }}
                                             </td>
 
                                             {{-- NUEVA CELDA: Botón de Eliminar --}}
