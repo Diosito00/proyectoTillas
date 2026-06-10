@@ -251,6 +251,15 @@ class AdminController extends Controller
         return view('admin.mensajes', compact('mensajes'));
     }
 
+    // Eliminar un mensaje de la bandeja de entrada
+    public function destroyMensaje($id)
+    {
+        $mensaje = Contacto::findOrFail($id);
+        $mensaje->delete();
+
+        return back()->with('success', 'El mensaje ha sido eliminado de la bandeja de entrada.');
+    }
+
     // Mostrar el historial de ventas del e-commerce
     public function ventas()
     {

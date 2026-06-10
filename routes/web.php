@@ -134,6 +134,9 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     
     // Bandeja de entrada de contactos
     Route::get('/mensajes', [AdminController::class, 'mensajes'])->name('admin.mensajes');
+
+    // Eliminar un mensaje de contacto
+    Route::delete('/mensajes/{id}', [AdminController::class, 'destroyMensaje'])->name('admin.mensajes.destroy');
     
     // Historial de ventas realizadas
     Route::get('/ventas', [AdminController::class, 'ventas'])->name('admin.ventas');

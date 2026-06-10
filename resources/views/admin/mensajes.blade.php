@@ -20,7 +20,12 @@
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <h2 class="fw-bold m-0"><i class="bi bi-envelope-paper-fill text-primary me-2"></i>Consultas Recibidas</h2>
                 </div>
-
+                @if(session('success'))
+                    <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm rounded-3">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
                 <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                     <div class="card-body p-0">
                         <div class="list-group list-group-flush">
@@ -30,7 +35,19 @@
                                         <h5 class="mb-1 fw-bold">
                                             <i class="bi bi-person-circle text-secondary me-2"></i>{{ $mensaje->nombre }}
                                         </h5>
-                                        <small class="text-muted fw-bold">{{ $mensaje->created_at->format('d/m/Y H:i') }}</small>
+                                        {{-- Contenedor derecho: Fecha + Botón Eliminar --}}
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted fw-bold">{{ $mensaje->created_at->format('d/m/Y H:i') }}</small>
+                                            
+                                            {{-- Formulario para borrar el mensaje --}}
+                                            <form action="{{ route('admin.mensajes.destroy', $mensaje->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que querés eliminar este mensaje? Esta acción no se puede deshacer.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger border-0" title="Eliminar mensaje">
+                                                    <i class="bi bi-trash-fill fs-5"></i>
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                     <h6 class="mb-3 text-primary"><i class="bi bi-envelope-at me-2"></i>{{ $mensaje->email }}</h6>
                                     
