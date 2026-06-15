@@ -61,24 +61,6 @@ Route::get('/en-proceso', function () {
     return view('en-proceso');
 })->name('en-proceso');
 
-// Ruta POST "/contacto"
-// Se ejecuta cuando se envía el formulario de contacto
-Route::post('/contacto', function (Request $request) {
-    // Redirige a la ruta 'contacto.exito'
-    // y envía datos del formulario (nombre y email)
-    return redirect()->route('contacto.exito')->with([
-        'nombre' => $request->nombre,
-        'email' => $request->email
-    ]);
-})->name('contacto.enviar');
-
-// Ruta GET "/contacto/exito"
-// Muestra una vista de confirmación luego de enviar el formulario
-Route::get('/contacto/exito', function () {
-    return view('contacto-exito');
-})->name('contacto.exito');
-
-
 // --- RUTAS DE AUTENTICACIÓN PÚBLICAS ---
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -150,6 +132,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/carrito/agregar', [CarritoController::class, 'agregar'])->name('carrito.agregar');
     Route::get('/carrito', [CarritoController::class, 'index'])->name('carrito.index');
     Route::post('/carrito/eliminar', [CarritoController::class, 'eliminar'])->name('carrito.eliminar');
+
+    // Actualizar cantidad en el carrito
+    Route::put('/carrito/actualizar', [CarritoController::class, 'actualizar'])->name('carrito.actualizar');
 
     // Rutas del Checkout (Pantalla de Envío y Pago)
     Route::get('/checkout', [CarritoController::class, 'mostrarCheckout'])->name('checkout');

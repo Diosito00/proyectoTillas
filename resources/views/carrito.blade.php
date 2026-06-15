@@ -22,6 +22,13 @@
             </div>
         @endif
 
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm rounded-3 mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
         @if(count($carrito) > 0)
             <div class="row">
                 <div class="col-lg-8 mb-4">
@@ -45,7 +52,22 @@
                                                 <span class="fw-bold">{{ $item['nombre'] }}</span>
                                             </td>
                                             <td class="py-3 text-center text-muted">{{ $item['talle'] }}</td>
-                                            <td class="py-3 text-center fw-bold">{{ $item['cantidad'] }}</td>
+                                            {{-- Columna de Cantidad Interactiva --}}
+                                            <td class="align-middle">
+                                                <form action="{{ route('carrito.actualizar') }}" method="POST" class="m-0">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    {{-- Enviamos el ID único de este renglón oculto --}}
+                                                    <input type="hidden" name="id_unico" value="{{ $id }}">
+                                                    
+                                                    {{-- Input numérico que envía el formulario automáticamente al cambiar --}}
+                                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" 
+                                                        min="1" class="form-control text-center mx-auto fw-bold shadow-sm" 
+                                                        style="width: 80px;" 
+                                                        onchange="this.form.submit()" 
+                                                        title="Modificar cantidad">
+                                                </form>
+                                            </td>
                                             <td class="py-3 text-end pe-4 fw-bold">
                                                 ${{ number_format($item['precio'], 0, ',', '.') }}
                                             </td>

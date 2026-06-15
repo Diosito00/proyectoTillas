@@ -72,9 +72,20 @@
                         <input type="number" name="cantidad" class="form-control text-center rounded-3" value="1" min="1" style="width: 100px;" required>
                         <small class="text-muted mt-1 d-block">Ingresá una cantidad menor o igual al stock del talle elegido.</small>
                     </div>
-                    <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-3">
-                        AGREGAR AL CARRITO <i class="bi bi-cart-plus ms-2"></i>
-                    </button>
+                    {{-- Opciones de botón según el estado de la sesión --}}
+                    @auth
+                        {{-- Si está logueado: Botón normal que envía el formulario --}}
+                        <button type="submit" class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-3" id="btn-submit">
+                            AGREGAR AL CARRITO <i class="bi bi-cart-plus ms-2"></i>
+                        </button>
+                    @else
+                        {{-- Si NO está logueado: Falso botón que lanza una alerta y lo lleva al login --}}
+                        <a href="{{ route('login') }}" 
+                           onclick="alert('¡Hola! Para poder elegir talles y agregar productos al carrito, primero debes iniciar sesión o crear una cuenta en Tillas.');" 
+                           class="btn btn-dark w-100 py-3 fw-bold fs-5 rounded-3 text-decoration-none text-center">
+                            INICIAR SESIÓN PARA COMPRAR <i class="bi bi-box-arrow-in-right ms-2"></i>
+                        </a>
+                    @endauth
                 </form>
             </div>
         </div>

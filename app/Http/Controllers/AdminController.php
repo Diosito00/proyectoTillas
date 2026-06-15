@@ -83,7 +83,7 @@ class AdminController extends Controller
             'imagen_url' => $nombreImagen,
         ]);
 
-        return redirect()->route('admin.index')->with('success', '¡Zapatilla agregada al inventario exitosamente!');
+        return redirect()->route('admin.inventario')->with('success', '¡Zapatilla agregada al inventario exitosamente!');
     }
 
     // Muestra la vista de gestión de stock para una zapatilla
@@ -170,7 +170,7 @@ class AdminController extends Controller
             'imagen_url' => $nombreImagen,
         ]);
 
-        return redirect()->route('admin.index')->with('success', '¡Modificación realizada correctamente!');
+        return redirect()->route('admin.inventario')->with('success', '¡Modificación realizada correctamente!');
     }
 
     // Procesar la Baja Lógica

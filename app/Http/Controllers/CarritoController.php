@@ -177,6 +177,38 @@ class CarritoController extends Controller
         }
     }
 
+    public function actualizar(Request $request)
+    {
+        // 1. Validamos que lleguen el ID del carrito y una cantidad válida
+        $request->validate([
+            'id_unico' => 'required',
+            'cantidad' => 'required|integer|min:1'
+        ]);
+
+        $carrito = session()->get('carrito', []);
+
+        // 2. Verificamos que el producto realmente esté en el carrito
+        if (isset($carrito[$request->id_unico])) {
+            $item = $carrito[$request->id_unico];
+            
+            // 3. Buscamos el talle en MariaDB para validar el stock físico
+            $talle = ProductoTalle::findOrFail($item['producto_talle_id']);
+
+            // 4. BARRERA DE SEGURIDAD: Evitamos que pongan más del stock disponible
+            if ($request->cantidad > $talle->stock) {
+                return back()->withErrors(['error' => "Solo nos quedan {$talle->stock} pares en talle {$item['talle']}."]);
+            }
+
+            // 5. Actualizamos la cantidad y guardamos en la sesión
+            $carrito[$request->id_unico]['cantidad'] = $request->cantidad;
+            session()->put('carrito', $carrito);
+
+            return back()->with('success', 'Cantidad actualizada correctamente.');
+        }
+
+        return back()->withErrors(['error' => 'El producto no se encontró en el carrito.']);
+    }
+
     public function historial()
     {
         $compras = Venta::where('user_id', auth()->id())
