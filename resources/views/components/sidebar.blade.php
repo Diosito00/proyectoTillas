@@ -1,4 +1,13 @@
-<nav class="col-md-3 col-lg-2 d-md-block bg-white shadow-sm sidebar-admin collapse pt-4">
+{{-- BOTÓN MÓVIL (Solo visible en celulares y tablets pequeñas) --}}
+<div class="col-12 d-md-none bg-white p-3 border-bottom d-flex justify-content-between align-items-center shadow-sm">
+    <span class="fw-bold text-dark"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Panel Admin</span>
+    <button class="btn btn-outline-dark btn-sm fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-expanded="false" aria-controls="sidebarMenu">
+        <i class="bi bi-list fs-5 me-1"></i> Menú
+    </button>
+</div>
+
+{{-- BARRA LATERAL (Le agregamos el id="sidebarMenu") --}}
+<nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white shadow-sm sidebar-admin collapse pt-4">
     <div class="position-sticky px-3">
         
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mb-3 text-muted text-uppercase fw-bold">
