@@ -48,20 +48,20 @@
                                     @foreach($carrito as $id => $item)
                                         <tr>
                                             <td class="ps-4 py-3 d-flex align-items-center">
-                                                <img src="{{ asset('imagenes/' . $item['imagen']) }}" alt="{{ $item['nombre'] }}" width="60" class="rounded me-3 object-fit-cover">
-                                                <span class="fw-bold">{{ $item['nombre'] }}</span>
+                                                <img src="{{ asset('imagenes/' .$item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}" width="60" class="rounded me-3 object-fit-cover">
+                                                <span class="fw-bold">{{ $item->producto->nombre }}</span>
                                             </td>
-                                            <td class="py-3 text-center text-muted">{{ $item['talle'] }}</td>
+                                            <td class="py-3 text-center text-muted">{{ $item->talle->talle }}</td>
                                             {{-- Columna de Cantidad Interactiva --}}
                                             <td class="align-middle">
                                                 <form action="{{ route('carrito.actualizar') }}" method="POST" class="m-0">
                                                     @csrf
                                                     @method('PUT')
                                                     {{-- Enviamos el ID único de este renglón oculto --}}
-                                                    <input type="hidden" name="id_unico" value="{{ $id }}">
+                                                    <input type="hidden" name="carrito_id" value="{{ $item->id }}">
                                                     
                                                     {{-- Input numérico que envía el formulario automáticamente al cambiar --}}
-                                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" 
+                                                    <input type="number" name="cantidad" value="{{ $item->cantidad }}" 
                                                         min="1" class="form-control text-center mx-auto fw-bold shadow-sm" 
                                                         style="width: 80px;" 
                                                         onchange="this.form.submit()" 
@@ -69,7 +69,7 @@
                                                 </form>
                                             </td>
                                             <td class="py-3 text-end pe-4 fw-bold">
-                                                ${{ number_format($item['precio'], 0, ',', '.') }}
+                                                ${{ number_format($item->precio, 0, ',', '.') }}
                                             </td>
 
                                             {{-- NUEVA CELDA: Botón de Eliminar --}}
@@ -77,7 +77,7 @@
                                                 <form action="{{ route('carrito.eliminar') }}" method="POST" class="d-inline">
                                                     @csrf
                                                     {{-- Mandamos el ID oculto al controlador --}}
-                                                    <input type="hidden" name="id_unico" value="{{ $id }}">
+                                                    <input type="hidden" name="carrito_id" value="{{ $item->id }}">
                                                     
                                                     <button type="submit" class="btn btn-link text-danger p-0" title="Eliminar producto">
                                                         <i class="bi bi-trash3-fill fs-5"></i>
@@ -112,11 +112,6 @@
 
                         <form action="{{ route('checkout') }}" method="POST">
                             @csrf
-                            <!-- <button type="submit" class="btn btn-dark w-100 py-3 rounded-3 fw-bold text-uppercase tracking-wide">
-                                Finalizar Compra <i class="bi bi-lock-fill ms-2"></i>
-                            </button> -->
-
-                            
                             {{-- ENLACE AL CHECKOUT:
                                 Redirige al cliente desde la vista de control del carrito hacia el formulario de pago.
                                 Usa las clases nativas 'btn-lg' y 'w-100' de Bootstrap para ocupar todo el ancho de forma responsiva. --}}

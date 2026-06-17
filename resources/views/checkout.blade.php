@@ -74,14 +74,14 @@
                             <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                                 <div class="d-flex align-items-center">
                                 {{-- Miniatura de la zapatilla tomada de la carpeta pública asset --}}
-                                    <img src="{{ asset('imagenes/' . $item['imagen']) }}" alt="{{ $item['nombre'] }}" width="50" height="50" class="rounded object-fit-cover me-3">
+                                    <img src="{{ asset('imagenes/' . $item->producto->imagen_url) }}" alt="{{ $item->producto->nombre }}" width="50" height="50" class="rounded object-fit-cover me-3">
                                     <div>
-                                        <h6 class="fw-bold mb-0 small">{{ $item['nombre'] }}</h6>
-                                        <small class="text-muted">Talle: {{ $item['talle'] }} x {{ $item['cantidad'] }}</small>
+                                        <h6 class="fw-bold mb-0 small">{{ $item->producto->nombre }}</h6>
+                                        <small class="text-muted">Talle: {{ $item->talle->talle }} x {{ $item->cantidad }}</small>
                                     </div>
                                 </div>
                                 {{-- Subtotal parcial de la zapatilla (precio individual multiplicado por cantidad) --}}
-                                <span class="fw-bold small">${{ number_format($item['precio'] * $item['cantidad'], 0, ',', '.') }}</span>
+                                <span class="fw-bold small">${{ number_format($item->precio * $item->cantidad, 0, ',', '.') }}</span>
                             </div>
                         @endforeach
                     </div>

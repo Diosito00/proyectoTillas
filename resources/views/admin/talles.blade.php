@@ -88,9 +88,13 @@
                                                     @endif
                                                 </td>
                                                 <td class="pe-4 text-end">
-                                                    <button class="btn btn-sm btn-outline-danger" title="Eliminar Talle">
-                                                        <i class="bi bi-trash"></i>
-                                                    </button>
+                                                    <form action="{{ route('admin.talles.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este talle?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger border-0" title="Eliminar talle">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 </td>
                                             </tr>
                                         @empty

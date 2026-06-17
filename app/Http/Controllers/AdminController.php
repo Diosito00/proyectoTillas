@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Producto; // Importamos el modelo
+use App\Models\Producto;
 use App\Models\ProductoTalle;
 use App\Models\Contacto;
 use App\Models\Venta;
@@ -178,12 +178,22 @@ class AdminController extends Controller
     {
         $producto = Producto::findOrFail($id);
 
-        // ATENCIÓN: No usamos File::delete() aquí. 
-        // Como es una baja lógica, la foto y el registro deben quedar en el servidor.
+        // Eliminamos primero los talles asociados a este producto
+        $producto->talles()->delete(); 
         
-        $producto->delete(); // Esto llenará la columna 'deleted_at'
+        // Luego damos de baja el producto principal
+        $producto->delete(); 
         
-        return back()->with('success', 'Producto dado de baja exitosamente (Baja Lógica).');
+        return back()->with('success', 'Producto y sus talles asociados dados de baja exitosamente.');
+    }
+
+    // Eliminar un talle específico de una zapatilla
+    public function destroyTalle($id)
+    {
+        $talle = ProductoTalle::findOrFail($id);
+        $talle->delete();
+
+        return back()->with('success', 'Talle eliminado correctamente.');
     }
 
     // Mostrar el listado de usuarios registrados

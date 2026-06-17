@@ -8,108 +8,114 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Producto;
 use App\Models\ProductoTalle;
 use App\Models\Venta;
+use App\Models\Carrito;
 
 class CarritoController extends Controller
 {
     public function agregar(Request $request)
     {
-        // 1. Validamos que nos envíen la información correcta (captura cantidad solicitada)
         $request->validate([
             'producto_id' => 'required|exists:productos,id',
             'talle_id'    => 'required|exists:producto_talles,id',
             'cantidad'    => 'required|integer|min:1'
         ]);
 
-        // 2. Buscamos la zapatilla y el talle en la base de datos
         $producto = Producto::findOrFail($request->producto_id);
         $talle = ProductoTalle::findOrFail($request->talle_id);
 
         if ($request->cantidad > $talle->stock) {
-            return back()->withErrors([
-                'error' => "No podés agregar {$request->cantidad} pares. El talle {$talle->talle} solo tiene {$talle->stock} pares en stock."
+            return back()->withErrors(['error' => "El talle {$talle->talle} solo tiene {$talle->stock} pares en stock."]);
+        }
+
+        // Buscamos si este usuario ya tiene ESTE talle exacto en su carrito en la BD
+        $itemCarrito = Carrito::where('user_id', Auth::id())
+                              ->where('producto_talle_id', $talle->id)
+                              ->first();
+
+        if ($itemCarrito) {
+            // Si ya lo tiene, le sumamos la cantidad (verificando stock límite)
+            if (($itemCarrito->cantidad + $request->cantidad) > $talle->stock) {
+                return back()->withErrors(['error' => "Con lo que ya tenés en el carrito, superás el stock máximo de {$talle->stock} pares."]);
+            }
+            $itemCarrito->cantidad += $request->cantidad;
+            $itemCarrito->save();
+        } else {
+            // Si no lo tiene, creamos un nuevo registro en la BD
+            Carrito::create([
+                'user_id'           => Auth::id(),
+                'producto_id'       => $producto->id,
+                'producto_talle_id' => $talle->id,
+                'cantidad'          => $request->cantidad,
+                'precio'            => $producto->precio
             ]);
         }
 
-        // 3. Obtenemos el carrito actual de la sesión
-        $carrito = session()->get('carrito', []);
-
-        // Usamos una clave compuesta (ID_PRODUCTO-ID_TALLES_PIVOT)
-        $id_unico = $producto->id . '-' . $talle->id;
-
-        // 4. Lógica de guardado considerando la cantidad enviada por el cliente
-        if (isset($carrito[$id_unico])) {
-            // Validamos que la suma acumulada tampoco supere el stock real
-            if (($carrito[$id_unico]['cantidad'] + $request->cantidad) > $talle->stock) {
-                return back()->withErrors(['error' => "Ya tenés unidades en el carrito. No podés superar el stock máximo de {$talle->stock} pares."]);
-            }
-            $carrito[$id_unico]['cantidad'] += $request->cantidad; // <-- SOLUCIÓN: Suma la cantidad solicitada
-        } else {
-            $carrito[$id_unico] = [
-                'producto_id'     => $producto->id,
-                'producto_talle_id' => $talle->id, // Guardamos este ID para facilitar el descuento de stock luego
-                'nombre'          => $producto->nombre,
-                'talle'           => $talle->talle,
-                'precio'          => $producto->precio,
-                'imagen'          => $producto->imagen_url,
-                'cantidad'        => $request->get('cantidad') // <-- SOLUCIÓN: Guarda la cantidad exacta elegida
-            ];
-        }
-
-        session()->put('carrito', $carrito);
-
-        return back()->with('success', '¡Zapatillas agregadas al carrito exitosamente!');
+        return back()->with('success', '¡Zapatillas agregadas al carrito!');
     }
 
     public function index()
     {
-        $carrito = session()->get('carrito', []);
-        $total = 0;
-        foreach ($carrito as $item) {
-            $total += $item['precio'] * $item['cantidad'];
-        }
+        // Traemos el carrito directo de la BD con sus relaciones
+        $carrito = Carrito::with(['producto', 'talle'])->where('user_id', Auth::id())->get();
+        
+        $total = $carrito->sum(function($item) {
+            return $item->precio * $item->cantidad;
+        });
 
         return view('carrito', compact('carrito', 'total'));
+    }
+
+    public function actualizar(Request $request)
+    {
+        $request->validate([
+            'carrito_id' => 'required|exists:carritos,id', // Ahora usamos el ID real de la tabla
+            'cantidad'   => 'required|integer|min:1'
+        ]);
+
+        $item = Carrito::where('id', $request->carrito_id)->where('user_id', Auth::id())->firstOrFail();
+        $talle = ProductoTalle::findOrFail($item->producto_talle_id);
+
+        if ($request->cantidad > $talle->stock) {
+            return back()->withErrors(['error' => "Solo nos quedan {$talle->stock} pares en talle {$talle->talle}."]);
+        }
+
+        $item->cantidad = $request->cantidad;
+        $item->save();
+
+        return back()->with('success', 'Cantidad actualizada correctamente.');
     }
 
     public function eliminar(Request $request)
     {
         $request->validate([
-            'id_unico' => 'required'
+            'carrito_id' => 'required|exists:carritos,id'
         ]);
 
-        $carrito = session()->get('carrito', []);
-
-        if (isset($carrito[$request->id_unico])) {
-            unset($carrito[$request->id_unico]);
-            session()->put('carrito', $carrito);
-            
-            return back()->with('success', 'Producto eliminado correctamente.');
-        }
-
-        return back()->withErrors(['error' => 'No se pudo eliminar el producto.']);
+        Carrito::where('id', $request->carrito_id)->where('user_id', Auth::id())->delete();
+        
+        return back()->with('success', 'Producto eliminado correctamente.');
     }
 
     public function mostrarCheckout()
     {
-        $carrito = session()->get('carrito', []);
+        $carrito = Carrito::with(['producto', 'talle'])->where('user_id', Auth::id())->get();
 
-        if (empty($carrito)) {
+        if ($carrito->isEmpty()) {
             return redirect()->route('catalogo')->withErrors(['error' => 'Tu carrito está vacío.']);
         }
 
-        $total = 0;
-        foreach($carrito as $item) {
-            $total += $item['precio'] * $item['cantidad'];
-        }
+        $total = $carrito->sum(function($item) {
+            return $item->precio * $item->cantidad;
+        });
 
         return view('checkout', compact('carrito', 'total'));
     }
 
     public function procesarCompra(Request $request)
     {
-        $carrito = session()->get('carrito', []);
+        $carrito = Carrito::where('user_id', Auth::id())->get();
         
-        if (empty($carrito)) {
+        if ($carrito->isEmpty()) {
             return redirect()->route('catalogo');
         }
 
@@ -118,17 +124,13 @@ class CarritoController extends Controller
             'telefono'  => 'required|string|max:20',
         ]);
 
-        $total = 0;
-        foreach($carrito as $item) {
-            $total += $item['precio'] * $item['cantidad'];
-        }
+        $total = $carrito->sum(function($item) {
+            return $item->precio * $item->cantidad;
+        });
         
-        // Usamos una Transacción de Base de Datos por seguridad (Database Transaction)
-        // Si la inserción del detalle falla o el stock no se descuenta, MariaDB cancela todo automáticamente
         DB::beginTransaction();
 
         try {
-            // 1. CABECERA: Registra la venta en la tabla 'ventas'
             $venta = Venta::create([
                 'user_id'   => Auth::id(),
                 'total'     => $total,
@@ -136,77 +138,33 @@ class CarritoController extends Controller
                 'fecha'     => now(),
             ]);
 
-            // 2. DETALLES Y REDUCCIÓN DE STOCK
-            foreach ($carrito as $key => $item) {
-                
-                $partes = explode('-', $key);
-                $talleId = isset($partes[1]) ? $partes[1] : ($item['producto_talle_id'] ?? null);
-                $cantidadComprada = $item['cantidad'];
-
-                // A. Inserción en la tabla de detalles relacional
+            foreach ($carrito as $item) {
                 DB::table('detalle_ventas')->insert([
                     'venta_id'        => $venta->id,
-                    'producto_id'     => $item['producto_id'],
-                    'talle'           => $item['talle'], 
-                    'cantidad'        => $cantidadComprada, // <-- SOLUCIÓN: Inserta la cantidad real del carrito
-                    'precio_unitario' => $item['precio'],
+                    'producto_id'     => $item->producto_id,
+                    'talle'           => $item->talle->talle, // Sacamos el número de talle de la relación
+                    'cantidad'        => $item->cantidad,
+                    'precio_unitario' => $item->precio,
                     'created_at'      => now(),
                     'updated_at'      => now(),
                 ]);
 
-                // B. NUEVO Y CRÍTICAL: Reducir el stock físico en MariaDB
-                if ($talleId) {
-                    DB::table('producto_talles')
-                        ->where('id', $talleId)
-                        ->decrement('stock', $cantidadComprada); // <-- SOLUCIÓN: Descuenta la cantidad exacta
-                }
+                // Descontamos stock
+                DB::table('producto_talles')
+                    ->where('id', $item->producto_talle_id)
+                    ->decrement('stock', $item->cantidad);
             }
 
-            // Si todo salió bien, confirmamos los cambios en MariaDB
+            // Vaciamos el carrito de este usuario eliminando sus registros de la BD
+            Carrito::where('user_id', Auth::id())->delete();
+
             DB::commit();
-
-            // Libera la sesión de memoria
-            session()->forget('carrito');
-
             return redirect()->route('compras.historial')->with('success', '¡Compra realizada con éxito! Podés verla en tu historial.');
 
         } catch (\Exception $e) {
-            // Si algo falla en el proceso, deshacemos todo para evitar inconsistencias en el dinero o inventario
             DB::rollBack();
-            return back()->withErrors(['error' => 'Ocurrió un error crítico al procesar la transacción: ' . $e->getMessage()]);
+            return back()->withErrors(['error' => 'Ocurrió un error al procesar la compra: ' . $e->getMessage()]);
         }
-    }
-
-    public function actualizar(Request $request)
-    {
-        // 1. Validamos que lleguen el ID del carrito y una cantidad válida
-        $request->validate([
-            'id_unico' => 'required',
-            'cantidad' => 'required|integer|min:1'
-        ]);
-
-        $carrito = session()->get('carrito', []);
-
-        // 2. Verificamos que el producto realmente esté en el carrito
-        if (isset($carrito[$request->id_unico])) {
-            $item = $carrito[$request->id_unico];
-            
-            // 3. Buscamos el talle en MariaDB para validar el stock físico
-            $talle = ProductoTalle::findOrFail($item['producto_talle_id']);
-
-            // 4. BARRERA DE SEGURIDAD: Evitamos que pongan más del stock disponible
-            if ($request->cantidad > $talle->stock) {
-                return back()->withErrors(['error' => "Solo nos quedan {$talle->stock} pares en talle {$item['talle']}."]);
-            }
-
-            // 5. Actualizamos la cantidad y guardamos en la sesión
-            $carrito[$request->id_unico]['cantidad'] = $request->cantidad;
-            session()->put('carrito', $carrito);
-
-            return back()->with('success', 'Cantidad actualizada correctamente.');
-        }
-
-        return back()->withErrors(['error' => 'El producto no se encontró en el carrito.']);
     }
 
     public function historial()

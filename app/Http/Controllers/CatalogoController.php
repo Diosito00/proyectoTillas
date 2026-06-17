@@ -10,8 +10,10 @@ class CatalogoController extends Controller
     // Inyectamos la variable $request para poder leer la URL (los $_GET)
     public function index(Request $request)
     {
-        // 1. Iniciamos la consulta (Preparamos el motor, pero aún no traemos los datos)
-        $query = Producto::query();
+        // 1. Iniciamos la consulta exigiendo que el producto tenga stock disponible
+        $query = Producto::whereHas('talles', function ($q) {
+            $q->where('stock', '>', 0);
+        });
 
         // 2. Filtro por Categorías (Hombre, Mujer, Niño)
         if ($request->has('categorias')) {

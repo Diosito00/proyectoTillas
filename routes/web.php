@@ -15,12 +15,15 @@ use App\Http\Controllers\AdminController;
 use App\Models\Producto;
 
 // Ruta principal del sitio ("/")
-// Cuando alguien entra a la raíz, devuelve la vista 'inicio'
 Route::get('/', function () {
-    // Traemos los 4 productos más recientes (ordenados por fecha de creación)
-    $nuevosProductos = Producto::orderBy('created_at', 'desc')->take(4)->get();
+    // Traemos los 4 productos más recientes, PERO exigimos que tengan stock
+    $nuevosProductos = Producto::whereHas('talles', function ($query) {
+        $query->where('stock', '>', 0);
+    })
+    ->orderBy('created_at', 'desc')
+    ->take(4)
+    ->get();
     
-    // Se los enviamos a la vista
     return view('inicio', compact('nuevosProductos'));
 })->name('inicio');
 
@@ -113,6 +116,9 @@ Route::middleware(['auth', AdminMiddleware::class])->prefix('admin')->group(func
     Route::get('/productos/{id}/editar', [AdminController::class, 'edit'])->name('admin.edit');
     Route::put('/productos/{id}', [AdminController::class, 'update'])->name('admin.update');
     Route::delete('/productos/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+    
+    // Ruta para eliminar un talle
+    Route::delete('/talles/{id}', [AdminController::class, 'destroyTalle'])->name('admin.talles.destroy');
     
     // Bandeja de entrada de contactos
     Route::get('/mensajes', [AdminController::class, 'mensajes'])->name('admin.mensajes');
