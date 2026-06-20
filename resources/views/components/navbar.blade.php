@@ -78,13 +78,16 @@
                     <i class="bi bi-cart3 fs-5"></i>
                     
                     {{-- Lógica del carrito: contamos cuántos elementos hay en el arreglo de la sesión --}}
-                    @php $cantidadCarrito = count(session('carrito', [])); @endphp
+                    @php
+                        $cantidadCarrito = \App\Models\Carrito::where('user_id', Auth::id())->sum('cantidad');
+                    @endphp
                     
                     {{-- Si hay al menos 1 producto, dibujamos el circulito rojo (badge) --}}
                     @if($cantidadCarrito > 0)
                         {{-- position-absolute top-0 start-100 translate-middle: clases de Bootstrap para anclar el circulito arriba a la derecha --}}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm" style="font-size: 0.65rem;">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; transform: translate(-30%, 20%) !important;">
                             {{ $cantidadCarrito }}
+                            <span class="visually-hidden">productos en el carrito</span>
                         </span>
                     @endif
                 </a>
